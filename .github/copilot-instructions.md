@@ -18,14 +18,11 @@
 1. Antes de qualquer implementacao relevante:
 - ler CONSTITUTION.md
 - ler ia/backlog.md
-- ler ia/backlog-items/B-XXX.md dos itens em doing e da sprint ativa
-- ler ia/sprints.md
-- ler ia/sprints/SPR-YYYY-NN.md da sprint ativa
-- ler ia/architecture.md
+- ler ia/backlog/B-XXX.md dos itens em doing e da sprint ativa
+- ler ia/sprint.md
+- ler ia/sprint/SPR-YYYY-NN.md da sprint ativa
 - ler ia/experience.md
 - ler ia/decisions.md
-- ler ia/runbook.md
-- ler ia/code.md
 
 2.1 Se a sprint estiver pausada por dependencia externa:
 - nao continuar implementacao de codigo
@@ -64,14 +61,14 @@ Atualizar sempre que houver mudanca:
 - ia/backlog.md:
   - manter somente consolidado sintetico dos itens
 
-- ia/backlog-items/B-XXX.md:
+- ia/backlog/B-XXX.md:
   - manter detalhes completos por item
   - atualizar escopo, criterios, dependencias, owner, risco e data
 
-- ia/sprints.md:
+- ia/sprint.md:
   - manter somente consolidado sintetico das sprints
 
-- ia/sprints/SPR-YYYY-NN.md:
+- ia/sprint/SPR-YYYY-NN.md:
   - no inicio: escopo, owners, risco e ordem
   - no fim: concluidos, pendencias e resumo
 
