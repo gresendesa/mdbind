@@ -33,5 +33,6 @@ Detalhes completos de cada sprint ficam em arquivos dedicados no diretorio scrum
 - Foco: Sintaxe de diretivas renderizavel como link Markdown (B-011)
 - Prioridade PO dos itens: 1 (critica)
 - Risco da sprint: medio
-- Resultado: 1/1 item entregue, 118 testes passando
+- Resultado: 1/1 item entregue, 121 testes passando
+- Nota: inclui hotfix de heading normalization no composer (root sempre vira H1, filhos relativizados corretamente)
 - Arquivo detalhado: scrum/sprint/SPR-2026-02.md

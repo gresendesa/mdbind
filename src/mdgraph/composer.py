@@ -26,10 +26,17 @@ def compose(
     if warnings is None:
         warnings = []
 
+    root_section = graph.index.get(root_uri)
+    if root_section is None:
+        raise ValueError(f"URI raiz nao encontrada: '{root_uri}'")
+
+    # O no raiz e sempre renormalizado para heading level 1
+    initial_offset = 1 - root_section.raw.heading_level
+
     seen: Set[str] = set()
     lines = _compose_node(
         root_uri, graph,
-        heading_offset=0,
+        heading_offset=initial_offset,
         execution_path=frozenset(),
         seen=seen,
         strict=strict,
@@ -81,7 +88,12 @@ def _compose_node(
                 )
                 continue  # rompe silenciosamente
 
-            child_offset = heading_offset + section.raw.heading_level
+            child_offset = heading_offset  # fallback se filho nao encontrado
+            child_section_lookup = graph.index.get(resolved_target)
+            if child_section_lookup is not None:
+                parent_new_level = section.raw.heading_level + heading_offset
+                child_offset = parent_new_level + 1 - child_section_lookup.raw.heading_level
+
             child_lines = _compose_node(
                 resolved_target, graph,
                 heading_offset=child_offset,
@@ -107,9 +119,9 @@ def _raw_lines(section) -> List[str]:
 
 
 def _adjust_heading(line: str, offset: int) -> str:
-    if offset == 0:
+    if offset == 0 or not line.startswith("#"):
         return line
-    if line.startswith("#"):
-        return "#" * offset + line
-    return line
+    original_level = len(line) - len(line.lstrip("#"))
+    new_level = max(1, original_level + offset)
+    return "#" * new_level + line[original_level:]
 
