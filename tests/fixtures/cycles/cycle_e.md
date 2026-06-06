@@ -1,7 +1,7 @@
 # No E
 
-```section
-id: no-e
+```yaml
+section: no-e
 ```
 
 Conteudo de E.

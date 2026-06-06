@@ -101,27 +101,27 @@ class TestSemDirectivas:
 
 class TestDirectivasEmTextoInline:
     def test_inline_no_meio_do_texto(self):
-        md = "# X\n\n```section\nid: x\n```\n\nTexto [@ref: z](y.md#z) mais texto.\n"
+        md = "# X\n\n```yaml\nsection: x\n```\n\nTexto [@ref: z](y.md#z) mais texto.\n"
         sections = parse_text(md, file_path="/repo/doc.md")
         assert len(sections[0].directives) == 1
         assert sections[0].directives[0].type == "ref"
         assert sections[0].directives[0].target_uri.endswith("y.md#z")
 
     def test_label_preservado(self):
-        md = "# X\n\n```section\nid: x\n```\n\n[@ref: Meu Label](y.md#z)\n"
+        md = "# X\n\n```yaml\nsection: x\n```\n\n[@ref: Meu Label](y.md#z)\n"
         sections = parse_text(md, file_path="/repo/doc.md")
         assert sections[0].directives[0].label == "Meu Label"
 
     def test_label_vazio_vira_none(self):
-        md = "# X\n\n```section\nid: x\n```\n\n[@ref](y.md#z)\n"
+        md = "# X\n\n```yaml\nsection: x\n```\n\n[@ref](y.md#z)\n"
         sections = parse_text(md, file_path="/repo/doc.md")
         assert sections[0].directives[0].label is None
 
     def test_diretivas_nao_vazam_para_subsecao(self):
         md = (
-            "# Pai\n\n```section\nid: pai\n```\n\n"
+            "# Pai\n\n```yaml\nsection: pai\n```\n\n"
             "[@ref: x](a.md#x)\n\n"
-            "## Filho\n\n```section\nid: filho\n```\n\n"
+            "## Filho\n\n```yaml\nsection: filho\n```\n\n"
             "[@include: y](b.md#y)\n"
         )
         sections = parse_text(md, file_path="/repo/doc.md")

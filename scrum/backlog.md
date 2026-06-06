@@ -42,6 +42,7 @@ Detalhes completos de cada item ficam em arquivos dedicados no diretorio scrum/b
 | B-010 | README e diretorio de exemplos               | SPR-2026-01 |
 | B-011 | Sintaxe de diretivas renderizavel como link MD | SPR-2026-02 |
 | B-012 | Profundidade configuravel no comando tree      | SPR-2026-03 |
+| B-013 | Sintaxe yaml para bloco de metadados de secao  | SPR-2026-04 |
 
 ### Pendentes
 

@@ -1,7 +1,7 @@
 # Guia de Instalacao
 
-```section
-id: instalacao
+```yaml
+section: instalacao
 title: Guia de Instalacao
 description: Passo a passo para instalar e configurar o sistema.
 owner: exemplo

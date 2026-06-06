@@ -1,7 +1,7 @@
 # No F
 
-```section
-id: no-f
+```yaml
+section: no-f
 ```
 
 Conteudo de F.

@@ -1,7 +1,7 @@
 # Exemplos do mdgraph
 
-```section
-id: examples-readme
+```yaml
+section: examples-readme
 title: Exemplos do mdgraph
 ```
 

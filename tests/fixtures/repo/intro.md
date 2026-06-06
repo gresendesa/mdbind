@@ -1,7 +1,7 @@
 # Introducao
 
-```section
-id: intro
+```yaml
+section: intro
 title: Introducao
 ```
 

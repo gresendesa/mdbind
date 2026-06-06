@@ -1,7 +1,7 @@
 # Secao Alpha
 
-```section
-id: alpha
+```yaml
+section: alpha
 title: Alpha
 owner: gresendesa
 ```
@@ -14,8 +14,8 @@ Conteudo da secao alpha com    espacos e formatacao especial.
 
 ## Sub Alpha
 
-```section
-id: sub-alpha
+```yaml
+section: sub-alpha
 ```
 
 Conteudo da sub-secao.

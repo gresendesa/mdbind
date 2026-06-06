@@ -1,11 +1,11 @@
 # Secao A
 
-```section
-id: secao-a
+```yaml
+section: secao-a
 ```
 
 # Secao A
 
-```section
-id: secao-a
+```yaml
+section: secao-a
 ```

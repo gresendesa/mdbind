@@ -1,7 +1,7 @@
 # No A
 
-```section
-id: no-a
+```yaml
+section: no-a
 ```
 
 Conteudo de A.

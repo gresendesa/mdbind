@@ -1,7 +1,7 @@
 # Intro
 
-```section
-id: intro
+```yaml
+section: intro
 ```
 
 Conteudo.

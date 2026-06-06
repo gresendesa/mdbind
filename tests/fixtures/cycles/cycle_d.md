@@ -1,7 +1,7 @@
 # No D
 
-```section
-id: no-d
+```yaml
+section: no-d
 ```
 
 Conteudo de D.
@@ -10,8 +10,8 @@ Conteudo de D.
 
 # No E
 
-```section
-id: no-e
+```yaml
+section: no-e
 ```
 
 Conteudo de E.

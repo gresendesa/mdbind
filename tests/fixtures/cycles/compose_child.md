@@ -1,7 +1,7 @@
 # Filho
 
-```section
-id: filho
+```yaml
+section: filho
 title: Filho
 ```
 

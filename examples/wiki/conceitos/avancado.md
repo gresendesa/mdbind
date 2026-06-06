@@ -1,7 +1,7 @@
 # Conceito Avancado
 
-```section
-id: avancado
+```yaml
+section: avancado
 title: Conceito Avancado
 description: Extensao do conceito basico com comportamentos adicionais.
 owner: exemplo

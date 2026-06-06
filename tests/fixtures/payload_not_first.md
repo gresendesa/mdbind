@@ -2,6 +2,6 @@
 
 Texto normal antes do bloco.
 
-```section
-id: fora-de-posicao
+```yaml
+section: fora-de-posicao
 ```

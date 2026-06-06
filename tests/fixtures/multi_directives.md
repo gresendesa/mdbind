@@ -1,7 +1,7 @@
 # Secao com Multiplas Diretivas
 
-```section
-id: multi
+```yaml
+section: multi
 ```
 
 Primeiro [@ref: x](a.md#x).

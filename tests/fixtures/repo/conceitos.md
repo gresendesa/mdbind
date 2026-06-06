@@ -1,7 +1,7 @@
 # Conceito A
 
-```section
-id: conceito-a
+```yaml
+section: conceito-a
 title: Conceito A
 ```
 
@@ -9,8 +9,8 @@ Definicao do conceito A. Inclui [@include: detalhe](sub/detalhe.md#detalhe).
 
 # Conceito B
 
-```section
-id: conceito-b
+```yaml
+section: conceito-b
 title: Conceito B
 ```
 

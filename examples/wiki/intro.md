@@ -1,7 +1,7 @@
 # Introducao
 
-```section
-id: intro
+```yaml
+section: intro
 title: Introducao ao Wiki de Exemplo
 description: Pagina raiz do wiki. Agrega conceitos basicos e o guia de instalacao.
 owner: exemplo

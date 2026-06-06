@@ -124,7 +124,17 @@ def _bind_metadata(
     while i < len(inner_tokens):
         tok = inner_tokens[i]
 
-        if tok.type == "fence" and tok.info.strip() == "section":
+        if tok.type == "fence" and tok.info.strip() == "yaml":
+            parsed_yaml = None
+            try:
+                parsed_yaml = yaml.safe_load(tok.content) or {}
+            except yaml.YAMLError:
+                parsed_yaml = {}
+            if not isinstance(parsed_yaml, dict) or "section" not in parsed_yaml:
+                # Bloco yaml sem campo 'section' e ignorado (yaml generico)
+                first_text_seen = True
+                i += 1
+                continue
             if first_text_seen and section_block_index == -1:
                 raise ParseError(
                     f"payload nao e o primeiro bloco na secao '{raw.heading_text}' "
@@ -169,13 +179,14 @@ def _bind_metadata(
             f"bloco section da secao '{raw.heading_text}' nao e um mapeamento YAML valido"
         )
 
-    if "id" not in metadata:
+    if not metadata.get("section"):
         raise ParseError(
-            f"secao sem payload obrigatorio: campo 'id' ausente na secao "
+            f"secao sem payload obrigatorio: campo 'section' ausente na secao "
             f"'{raw.heading_text}' (linha {raw.source_start_line})"
         )
 
-    section_id = str(metadata["id"])
+    section_id = str(metadata.pop("section"))
+    metadata["id"] = section_id
     uri = f"{file_path}#{section_id}"
 
     return ParsedSection(

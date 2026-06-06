@@ -1,7 +1,7 @@
 # No B
 
-```section
-id: no-b
+```yaml
+section: no-b
 ```
 
 Conteudo de B.

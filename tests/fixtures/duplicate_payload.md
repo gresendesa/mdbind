@@ -1,9 +1,9 @@
 # Secao Com Payload Duplicado
 
-```section
-id: primeiro-bloco
+```yaml
+section: primeiro-bloco
 ```
 
-```section
-id: segundo-bloco
+```yaml
+section: segundo-bloco
 ```

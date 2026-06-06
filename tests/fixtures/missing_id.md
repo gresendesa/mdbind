@@ -1,8 +1,8 @@
 # Secao Com Payload Sem ID
 
-```section
+```yaml
+section:
 title: Sem ID aqui
-owner: alguem
 ```
 
 Conteudo.

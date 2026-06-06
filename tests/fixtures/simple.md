@@ -1,7 +1,7 @@
 # Secao Simples
 
-```section
-id: secao-simples
+```yaml
+section: secao-simples
 title: Secao Simples
 ```
 

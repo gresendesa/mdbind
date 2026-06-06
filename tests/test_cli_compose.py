@@ -25,7 +25,7 @@ def _uri(filename: str, section_id: str) -> str:
 def _make_graph_with_phantom_include():
     from mdgraph.models import ParsedSection, RawSection, SectionGraph, SectionIndex
     with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
-        f.write("# Temp\n\n```section\nid: temp\n```\n\n[@include: y](nao-existe.md#y)\n")
+        f.write("# Temp\n\n```yaml\nsection: temp\n```\n\n[@include: y](nao-existe.md#y)\n")
         tmp_path = f.name
     raw = RawSection(heading_level=1, heading_text="Temp",
                      token_start=0, token_end=6,
@@ -98,7 +98,7 @@ class TestComposeDeduplicate:
 
         # Arquivo raiz temporario com dois @include para o mesmo filho (caminho absoluto)
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False) as f:
-            f.write("# Raiz Dup\n\n```section\nid: raiz-dup\n```\n\n"
+            f.write("# Raiz Dup\n\n```yaml\nsection: raiz-dup\n```\n\n"
                     f"[@include: filho]({child_path}#filho)\n\n"
                     f"[@include: filho]({child_path}#filho)\n")
             tmp_root = f.name
@@ -154,12 +154,12 @@ class TestComposeHeadingNormalization:
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md",
                                          delete=False, dir="/tmp") as f:
-            f.write("## Filho\n\n```section\nid: filho-h2\n```\n\nConteudo do filho h2.\n")
+            f.write("## Filho\n\n```yaml\nsection: filho-h2\n```\n\nConteudo do filho h2.\n")
             child_path = f.name
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".md",
                                          delete=False, dir="/tmp") as f:
-            f.write(f"## Raiz\n\n```section\nid: raiz-h2\n```\n\n"
+            f.write(f"## Raiz\n\n```yaml\nsection: raiz-h2\n```\n\n"
                     f"[@include: filho]({child_path}#filho-h2)\n")
             root_path = f.name
 

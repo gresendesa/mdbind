@@ -1,7 +1,7 @@
 # Detalhe
 
-```section
-id: detalhe
+```yaml
+section: detalhe
 title: Detalhe Tecnico
 ```
 

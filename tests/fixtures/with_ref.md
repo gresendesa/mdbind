@@ -1,7 +1,7 @@
 # Secao com Ref
 
-```section
-id: com-ref
+```yaml
+section: com-ref
 ```
 
 Veja [@ref: alvo](outro.md#alvo) para mais detalhes.

@@ -1,7 +1,7 @@
 # Auto Ref
 
-```section
-id: auto
+```yaml
+section: auto
 ```
 
 Conteudo.

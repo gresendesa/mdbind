@@ -1,7 +1,7 @@
 # Capitulo Um
 
-```section
-id: capitulo-um
+```yaml
+section: capitulo-um
 title: Capitulo Um
 ```
 
@@ -9,8 +9,8 @@ Texto do capitulo.
 
 ## Subsecao A
 
-```section
-id: subsecao-a
+```yaml
+section: subsecao-a
 title: Subsecao A
 ```
 
@@ -18,8 +18,8 @@ Texto da subsecao.
 
 ## Subsecao B
 
-```section
-id: subsecao-b
+```yaml
+section: subsecao-b
 title: Subsecao B
 ```
 
@@ -27,8 +27,8 @@ Texto da subsecao B.
 
 # Capitulo Dois
 
-```section
-id: capitulo-dois
+```yaml
+section: capitulo-dois
 title: Capitulo Dois
 ```
 

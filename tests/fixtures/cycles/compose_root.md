@@ -1,7 +1,7 @@
 # Documento Raiz
 
-```section
-id: raiz
+```yaml
+section: raiz
 title: Raiz
 ```
 

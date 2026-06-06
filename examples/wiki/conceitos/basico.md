@@ -1,7 +1,7 @@
 # Conceito Basico
 
-```section
-id: basico
+```yaml
+section: basico
 title: Conceito Basico
 description: Definicao do conceito fundamental do sistema.
 owner: exemplo

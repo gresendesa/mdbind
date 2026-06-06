@@ -1,7 +1,7 @@
 # Secao com Include
 
-```section
-id: com-include
+```yaml
+section: com-include
 ```
 
 [@include: intro](../outros/base.md#intro)

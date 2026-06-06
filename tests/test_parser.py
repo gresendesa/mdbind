@@ -77,7 +77,8 @@ class TestSemPayload:
 
 class TestValidacoes:
     def test_id_ausente_levanta_parse_error(self):
-        with pytest.raises(ParseError, match="campo 'id' ausente"):
+        # Bloco yaml com section: vazio levanta ParseError
+        with pytest.raises(ParseError, match="campo 'section' ausente"):
             parse_file(FIXTURES / "missing_id.md")
 
     def test_payload_nao_primeiro_bloco(self):
@@ -101,8 +102,8 @@ class TestParseTextInline:
     def test_campos_livres_preservados(self):
         md = """# Secao
 
-```section
-id: minha-secao
+```yaml
+section: minha-secao
 owner: gresendesa
 tags: [a, b]
 ```
@@ -114,6 +115,19 @@ tags: [a, b]
         assert meta["tags"] == ["a", "b"]
 
     def test_uri_formato_correto(self):
-        md = """# X\n\n```section\nid: x\n```\n"""
+        md = """# X\n\n```yaml\nsection: x\n```\n"""
         sections = parse_text(md, file_path="pasta/arq.md")
         assert sections[0].uri == "pasta/arq.md#x"
+
+    def test_yaml_sem_section_ignorado(self):
+        # Bloco yaml sem campo 'section' e yaml generico — secao nao e indexada
+        md = "# Doc\n\n```yaml\ntitle: apenas yaml\n```\n\nTexto.\n"
+        sections = parse_text(md, file_path="mem.md")
+        assert len(sections) == 0
+
+    def test_section_mapeado_para_id_interno(self):
+        # O campo section: e convertido para metadata["id"] internamente
+        md = "# Doc\n\n```yaml\nsection: meu-id\ntitle: Titulo\n```\n"
+        sections = parse_text(md, file_path="mem.md")
+        assert sections[0].metadata["id"] == "meu-id"
+        assert "section" not in sections[0].metadata

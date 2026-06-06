@@ -1,7 +1,7 @@
 # Secao Duplicada
 
-```section
-id: intro
+```yaml
+section: intro
 ```
 
 Este id 'intro' colide com intro.md#intro do mesmo repositorio.
