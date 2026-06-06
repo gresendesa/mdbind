@@ -98,3 +98,12 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: medium
 - Result: 5/5 tasks done, 209 tests passing
 - Detailed file: scrum/sprint/SPR-2026-09.md
+
+### SPR-2026-10
+
+- Status: done
+- Focus: B-027 — README.md ideal for GitHub project homepage
+- PO Priority of items: 2 (high)
+- Sprint risk: low (documentation only, weighted avg 1.0)
+- Result: 5/5 tasks done, 209 tests passing
+- Detailed file: scrum/sprint/SPR-2026-10.md

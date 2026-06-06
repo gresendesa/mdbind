@@ -38,31 +38,17 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-014 | Translate docs + expand specification.md §1–§11 | SPR-2026-05 (partial) |
 | B-015 | mdgraph validate                             | SPR-2026-05 |
 | B-025 | --json flag for get and tree                 | SPR-2026-05 |
-
-### Pending
-
-| ID    | Title                                               | PO Priority   | Risk  | Tier       | Deps         |
-|-------|-----------------------------------------------------|---------------|-------|------------|--------------|
-| B-016 | mdgraph context                                     | SPR-2026-06 |
-| B-017 | mdgraph backlinks                                   | SPR-2026-06 |
-| B-018 | mdgraph search                                      | SPR-2026-06 |
-| B-019 | mdgraph impact                                      | SPR-2026-06 |
-
-### Pending
-
-| ID    | Title                                               | PO Priority   | Risk  | Tier       | Deps         |
-|-------|-----------------------------------------------------|---------------|-------|------------|--------------|
-| B-020 | mdgraph neighbors                                   | SPR-2026-07 |
-| B-021 | mdgraph explain                                     | SPR-2026-07 |
-| B-022 | mdgraph diff                                        | SPR-2026-07 |
-| B-023 | mdgraph query                                       | SPR-2026-07 |
-| B-024 | mdgraph context-compose                             | SPR-2026-07 |
-
-### Pending
-
-| ID    | Title                                               | PO Priority   | Risk  | Tier  | Deps  |
-|-------|-----------------------------------------------------|---------------|-------|-------|-------|
-| B-026 | Rename project to MdBind, CLI command to mdb        | SPR-2026-09   |
+| B-016 | mdb context                                  | SPR-2026-06 |
+| B-017 | mdb backlinks                                | SPR-2026-06 |
+| B-018 | mdb search                                   | SPR-2026-06 |
+| B-019 | mdb impact                                   | SPR-2026-06 |
+| B-020 | mdb neighbors                                | SPR-2026-07 |
+| B-021 | mdb explain                                  | SPR-2026-07 |
+| B-022 | mdb diff                                     | SPR-2026-07 |
+| B-023 | mdb query                                    | SPR-2026-07 |
+| B-024 | mdb context-compose                          | SPR-2026-07 |
+| B-026 | Rename project to MdBind, CLI command to mdb | SPR-2026-09 |
+| B-027 | README.md ideal for GitHub homepage          | SPR-2026-10 |
 
 ### Pending
 
