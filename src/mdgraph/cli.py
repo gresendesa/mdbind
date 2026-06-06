@@ -101,6 +101,10 @@ def tree(
         False, "--refs",
         help="Exibir backlinks (quem depende desta secao).",
     ),
+    depth: Optional[int] = typer.Option(
+        None, "--depth", "-d",
+        help="Profundidade maxima da arvore (padrao: ilimitada).",
+    ),
 ) -> None:
     """
     Exibe a hierarquia visual de dependencias de uma secao.
@@ -126,9 +130,9 @@ def tree(
         raise typer.Exit(code=1)
 
     if refs:
-        _print_tree_incoming(abs_uri, graph, prefix="", visited=set())
+        _print_tree_incoming(abs_uri, graph, prefix="", visited=set(), depth=depth)
     else:
-        _print_tree_outgoing(abs_uri, graph, prefix="", visited=set())
+        _print_tree_outgoing(abs_uri, graph, prefix="", visited=set(), depth=depth)
 
 
 def _label(uri: str, graph) -> str:
@@ -139,29 +143,34 @@ def _label(uri: str, graph) -> str:
     return uri
 
 
-def _print_tree_outgoing(uri: str, graph, prefix: str, visited: set) -> None:
+def _print_tree_outgoing(uri: str, graph, prefix: str, visited: set, depth: Optional[int] = None) -> None:
     marker = "(ciclo)" if uri in visited else ""
     typer.echo(f"{prefix}{_label(uri, graph)} {marker}".rstrip())
     if uri in visited:
+        return
+    if depth is not None and depth <= 0:
         return
     visited = visited | {uri}
     children = sorted(graph.outgoing_edges.get(uri, set()))
+    next_depth = None if depth is None else depth - 1
     for i, child in enumerate(children):
         connector = "└── " if i == len(children) - 1 else "├── "
-        extension = "    " if i == len(children) - 1 else "│   "
-        _print_tree_outgoing(child, graph, prefix + connector, visited)
+        _print_tree_outgoing(child, graph, prefix + connector, visited, next_depth)
 
 
-def _print_tree_incoming(uri: str, graph, prefix: str, visited: set) -> None:
+def _print_tree_incoming(uri: str, graph, prefix: str, visited: set, depth: Optional[int] = None) -> None:
     marker = "(ciclo)" if uri in visited else ""
     typer.echo(f"{prefix}{_label(uri, graph)} {marker}".rstrip())
     if uri in visited:
         return
+    if depth is not None and depth <= 0:
+        return
     visited = visited | {uri}
     parents = sorted(graph.incoming_edges.get(uri, set()))
+    next_depth = None if depth is None else depth - 1
     for i, parent in enumerate(parents):
         connector = "└── " if i == len(parents) - 1 else "├── "
-        _print_tree_incoming(parent, graph, prefix + connector, visited)
+        _print_tree_incoming(parent, graph, prefix + connector, visited, next_depth)
 
 
 # ---------------------------------------------------------------------------
@@ -178,6 +187,10 @@ def compose(
     strict: bool = typer.Option(False, "--strict", help="Abortar em URI nao resolvida."),
     deduplicate: bool = typer.Option(False, "--deduplicate", help="Deduplicar nos repetidos."),
     json_output: bool = typer.Option(False, "--json", help="Exportar como JSON estruturado."),
+    depth: Optional[int] = typer.Option(
+        None, "--depth", "-d",
+        help="Profundidade maxima de expansao de @include (padrao: ilimitada).",
+    ),
 ) -> None:
     """
     Materializa um documento Markdown unificado expandindo @include recursivamente.
@@ -215,6 +228,7 @@ def compose(
             strict=strict,
             deduplicate=deduplicate,
             warnings=collected_warnings,
+            depth=depth,
         )
     except ValueError as exc:
         typer.echo(f"Erro: {exc}", err=True)

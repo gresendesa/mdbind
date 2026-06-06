@@ -223,6 +223,37 @@ class TestComposeHeadingNormalization:
         assert first_heading.startswith("# ") and not first_heading.startswith("## ")
 
 
+class TestComposeDepth:
+    def test_depth_0_nao_expande_includes(self):
+        # Com --depth 0, @include nao deve ser expandido
+        result = runner.invoke(app, ["compose", _uri("compose_root.md", "raiz"),
+                                     "--root", str(CYCLES), "--depth", "0"])
+        assert result.exit_code == 0
+        assert "Conteudo do filho incluido" not in result.output
+
+    def test_depth_1_expande_filho_direto(self):
+        # Com --depth 1, o filho direto deve ser expandido
+        result = runner.invoke(app, ["compose", _uri("compose_root.md", "raiz"),
+                                     "--root", str(CYCLES), "--depth", "1"])
+        assert result.exit_code == 0
+        assert "Conteudo do filho incluido" in result.output
+
+    def test_depth_none_expande_tudo(self):
+        # Sem --depth, comportamento atual: expande tudo
+        result = runner.invoke(app, ["compose", _uri("compose_root.md", "raiz"),
+                                     "--root", str(CYCLES)])
+        assert result.exit_code == 0
+        assert "Conteudo do filho incluido" in result.output
+
+    def test_depth_0_preserva_conteudo_proprio(self):
+        # Com --depth 0, o conteudo do no raiz deve estar presente
+        result = runner.invoke(app, ["compose", _uri("compose_root.md", "raiz"),
+                                     "--root", str(CYCLES), "--depth", "0"])
+        assert result.exit_code == 0
+        assert "Introducao do documento" in result.output
+        assert "Texto apos o include" in result.output
+
+
 class TestComposeJson:
     def test_json_valido(self):
         result = runner.invoke(app, ["compose", _uri("compose_root.md", "raiz"),

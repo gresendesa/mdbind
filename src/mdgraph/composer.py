@@ -22,6 +22,7 @@ def compose(
     strict: bool = False,
     deduplicate: bool = False,
     warnings: Optional[List[str]] = None,
+    depth: Optional[int] = None,
 ) -> str:
     if warnings is None:
         warnings = []
@@ -42,6 +43,7 @@ def compose(
         strict=strict,
         deduplicate=deduplicate,
         warnings=warnings,
+        depth=depth,
     )
     return "\n".join(lines)
 
@@ -55,6 +57,7 @@ def _compose_node(
     strict: bool,
     deduplicate: bool,
     warnings: List[str],
+    depth: Optional[int] = None,
 ) -> List[str]:
     section = graph.index.get(uri)
     if section is None:
@@ -88,6 +91,10 @@ def _compose_node(
                 )
                 continue  # rompe silenciosamente
 
+            # Verificar limite de profundidade
+            if depth is not None and depth <= 0:
+                continue  # nao expande, descarta a linha de @include
+
             child_offset = heading_offset  # fallback se filho nao encontrado
             child_section_lookup = graph.index.get(resolved_target)
             if child_section_lookup is not None:
@@ -102,6 +109,7 @@ def _compose_node(
                 strict=strict,
                 deduplicate=deduplicate,
                 warnings=warnings,
+                depth=None if depth is None else depth - 1,
             )
             result.extend(child_lines)
         else:

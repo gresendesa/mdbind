@@ -35,4 +35,13 @@ Detalhes completos de cada sprint ficam em arquivos dedicados no diretorio scrum
 - Risco da sprint: medio
 - Resultado: 1/1 item entregue, 121 testes passando
 - Nota: inclui hotfix de heading normalization no composer (root sempre vira H1, filhos relativizados corretamente)
+
+### SPR-2026-03
+
+- Status: concluida
+- Foco: Profundidade configuravel no comando tree (B-012)
+- Prioridade PO dos itens: 1 (critica)
+- Risco da sprint: baixo
+- Resultado: 1/1 item entregue, 126 testes passando
+- Arquivo detalhado: scrum/sprint/SPR-2026-03.md
 - Arquivo detalhado: scrum/sprint/SPR-2026-02.md
