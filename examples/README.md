@@ -1,42 +1,54 @@
-# Exemplos do mdgraph
+# mdgraph examples
 
 ```yaml
 section: examples-readme
-title: Exemplos do mdgraph
+title: mdgraph examples
 ```
 
-Este diretorio contem um repositorio Markdown funcional para demonstrar todos os recursos do motor.
+This directory contains a functional Markdown repository demonstrating all engine features.
 
-## Estrutura
+## Structure
 
 ```
 examples/
   wiki/
-    intro.md               # pagina raiz — usa @include e @ref
+    intro.md               # root page — uses @include and @ref
     conceitos/
-      basico.md            # secao folha sem dependencias externas
-      avancado.md          # usa @ref para basico
+      basico.md            # leaf section with no external dependencies
+      avancado.md          # uses @ref to basico
     guia/
-      instalacao.md        # usa @include de avancado
+      instalacao.md        # uses @include of avancado
 ```
 
-## Como executar
+## How to run
 
 ```bash
-# A partir da raiz do projeto (com .venv ativo):
+# From the project root (with .venv active):
 
-# Extrair uma secao
+# Extract a section
 mdgraph get examples/wiki/intro.md#intro
 
-# Ver arvore de dependencias
+# View dependency tree
 mdgraph tree examples/wiki/guia/instalacao.md#instalacao --root examples/wiki
 
-# Ver backlinks (quem depende de basico)
+# View backlinks (who depends on basico)
 mdgraph tree examples/wiki/conceitos/basico.md#basico --root examples/wiki --refs
 
-# Compor documento unificado a partir da raiz
+# Compose a unified document from the root
 mdgraph compose examples/wiki/intro.md#intro --root examples/wiki
 
-# Compor e exportar JSON
+# Compose and export as JSON
 mdgraph compose examples/wiki/intro.md#intro --root examples/wiki --json
+
+# Validate repository integrity
+mdgraph validate --root examples/wiki
+
+# Search by metadata
+mdgraph search owner=example --root examples/wiki --json
+
+# Get context of a node
+mdgraph context examples/wiki/intro.md#intro --root examples/wiki --json
+
+# Find impact of a change to basico
+mdgraph impact examples/wiki/conceitos/basico.md#basico --root examples/wiki --json
 ```

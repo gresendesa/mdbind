@@ -1,45 +1,45 @@
-# Guia de Instalacao
+# Installation Guide
 
 ```yaml
 section: instalacao
-title: Guia de Instalacao
-description: Passo a passo para instalar e configurar o sistema.
-owner: exemplo
-tags: [guia, instalacao]
+title: Installation Guide
+description: Step-by-step guide to install and configure the system.
+owner: example
+tags: [guide, installation]
 ```
 
-Este guia cobre a instalacao completa do sistema.
+This guide covers the complete system installation.
 
-Antes de comecar, certifique-se de entender o conceito avancado:
+Before starting, make sure you understand the advanced concept:
 
-[@include: Conceito Avancado](../conceitos/avancado.md#avancado)
+[@include: Advanced Concept](../conceitos/avancado.md#avancado)
 
-## Pre-requisitos
+## Prerequisites
 
-- Python 3.11 ou superior
+- Python 3.11 or higher
 - Git
-- Acesso a internet para download de dependencias
+- Internet access for dependency download
 
-## Passos
+## Steps
 
-1. Clone o repositorio:
+1. Clone the repository:
    ```bash
-   git clone <url-do-repositorio>
-   cd projeto
+   git clone <repository-url>
+   cd project
    ```
 
-2. Crie o ambiente virtual:
+2. Create the virtual environment:
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
 
-3. Instale as dependencias:
+3. Install dependencies:
    ```bash
    pip install -e .
    ```
 
-4. Verifique a instalacao:
+4. Verify installation:
    ```bash
    mdgraph --help
    ```

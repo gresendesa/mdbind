@@ -1,18 +1,18 @@
-# Introducao
+# Introduction
 
 ```yaml
 section: intro
-title: Introducao ao Wiki de Exemplo
-description: Pagina raiz do wiki. Agrega conceitos basicos e o guia de instalacao.
-owner: exemplo
-tags: [raiz, wiki]
+title: Introduction to the Example Wiki
+description: Root page of the wiki. Aggregates core concepts and the installation guide.
+owner: example
+tags: [root, wiki]
 ```
 
-Bem-vindo ao wiki de exemplo do `mdgraph`.
+Welcome to the `mdgraph` example wiki.
 
-Esta pagina e a raiz do repositorio. Ela referencia conceitos fundamentais
-e inclui o guia de instalacao completo.
+This page is the repository root. It references fundamental concepts
+and includes the complete installation guide.
 
-Para entender os conceitos basicos, veja [@ref: Conceito Basico](conceitos/basico.md#basico).
+To understand the core concepts, see [@ref: Basic Concept](conceitos/basico.md#basico).
 
-[@include: Guia de Instalacao](guia/instalacao.md#instalacao)
+[@include: Installation Guide](guia/instalacao.md#instalacao)

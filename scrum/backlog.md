@@ -52,14 +52,18 @@ Full details for each item are in dedicated files under scrum/backlog/.
 
 | ID    | Title                                               | PO Priority   | Risk  | Tier       | Deps         |
 |-------|-----------------------------------------------------|---------------|-------|------------|--------------|
-| B-020 | mdgraph neighbors: graph neighborhood exploration   | 2 (high)      | 1     | IA v2      | B-004        |
-| B-021 | mdgraph explain: find paths between nodes           | 2 (high)      | 2     | IA v2      | B-004        |
-| B-022 | mdgraph diff: structural diff against git history   | 2 (high)      | 3     | IA v2      | B-004        |
-| B-023 | mdgraph query: advanced metadata query language     | 2 (high)      | 3     | IA v2      | B-018        |
-| B-024 | mdgraph context-compose: LLM context materialization| 1 (critical)  | 2     | IA v2      | B-007,B-016  |
+| B-020 | mdgraph neighbors                                   | SPR-2026-07 |
+| B-021 | mdgraph explain                                     | SPR-2026-07 |
+| B-022 | mdgraph diff                                        | SPR-2026-07 |
+| B-023 | mdgraph query                                       | SPR-2026-07 |
+| B-024 | mdgraph context-compose                             | SPR-2026-07 |
+
+### Pending
+
+(none — all items delivered)
 
 ### Planned
 
-(none — all items concluded or pending)
+(none)
 
 ## Template for new items

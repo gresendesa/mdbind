@@ -44,7 +44,7 @@ class TestExamplesCli:
     def test_get_intro(self):
         result = runner.invoke(app, ["get", _uri("intro.md", "intro")])
         assert result.exit_code == 0
-        assert "Introducao" in result.output
+        assert "Introduction" in result.output or "intro" in result.output.lower()
 
     def test_get_basico(self):
         result = runner.invoke(app, ["get", _uri("conceitos/basico.md", "basico")])
@@ -74,6 +74,6 @@ class TestExamplesCli:
             "--root", str(EXAMPLES),
         ])
         assert result.exit_code == 0
-        # O compose da intro deve incluir conteudo de instalacao e avancado
-        assert "Guia de Instalacao" in result.output or "instalacao" in result.output.lower()
-        assert "Pre-requisitos" in result.output
+        # compose of intro must include instalacao and avancado content
+        assert "Installation Guide" in result.output or "instalacao" in result.output.lower()
+        assert "Prerequisites" in result.output

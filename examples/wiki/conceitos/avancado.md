@@ -1,18 +1,18 @@
-# Conceito Avancado
+# Advanced Concept
 
 ```yaml
 section: avancado
-title: Conceito Avancado
-description: Extensao do conceito basico com comportamentos adicionais.
-owner: exemplo
-tags: [conceito, avancado]
+title: Advanced Concept
+description: Extension of the basic concept with additional behaviors.
+owner: example
+tags: [concept, advanced]
 ```
 
-O conceito avancado estende o [@ref: Conceito Basico](basico.md#basico).
+The advanced concept extends the [@ref: Basic Concept](basico.md#basico).
 
-Ele adiciona comportamentos compostos e pode ser incluido em documentos de nivel superior.
+It adds composite behaviors and can be included in higher-level documents.
 
-Caracteristicas adicionais:
-- Composicao de multiplos conceitos basicos
-- Suporte a parametrizacao via campos livres no bloco `section`
-- Referenciado pelo guia de instalacao
+Additional characteristics:
+- Composition of multiple basic concepts
+- Supports parameterization via free fields in the `section` block
+- Referenced by the installation guide

@@ -71,3 +71,21 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: medium (weighted avg 1.75)
 - Result: 4/4 tasks done, 178 tests passing
 - Detailed file: scrum/sprint/SPR-2026-06.md
+
+### SPR-2026-07
+
+- Status: done
+- Focus: IA v2 graph operations — neighbors, explain, diff, query, context-compose
+- PO Priority of items: 2 (high) for all
+- Sprint risk: medium (weighted avg 2.2)
+- Result: 5/5 tasks done, 209 tests passing
+- Detailed file: scrum/sprint/SPR-2026-07.md
+
+### SPR-2026-08
+
+- Status: done
+- Focus: B-014 completion — README rewrite + examples translation
+- PO Priority of items: 2 (high)
+- Sprint risk: low (all documentation)
+- Result: 3/3 tasks done, 209 tests passing
+- Detailed file: scrum/sprint/SPR-2026-08.md
