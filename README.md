@@ -11,8 +11,22 @@ without databases, embeddings, or proprietary formats.
 [![Tests](https://img.shields.io/badge/tests-209%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
 [![Version](https://img.shields.io/badge/version-0.1.4-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
+[![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
 
 </div>
+
+---
+
+```bash
+# Install
+pip install mdbind
+
+# Validate your docs folder
+mdb validate --root docs/
+
+# Get a section by URI
+mdb get docs/intro.md#intro --json
+```
 
 ---
 
