@@ -1,8 +1,8 @@
-# Copilot Instructions - Macrosoft Dev
+# AGENTS Instructions - MDBind
 
 ## Contexto deste repositorio
 
-<VISÃO AQUI>
+
 
 ## Objetivo do agente em novas sessoes
 
