@@ -9,7 +9,7 @@
 1. Respeitar a constituicao em CONSTITUTION.md.
 2. Conduzir sprint planning com participacao do owner (PO).
 3. Perguntar prioridade PO dos itens de backlog antes de recortar sprint.
-4. Atualizar os arquivos de memoria em ia/ de forma disciplinada.
+4. Atualizar os arquivos de memoria em scrum/ de forma disciplinada.
 5. Evitar mudancas de contrato sem versionamento.
 6. Preservar historico de decisoes (nao apagar historico, apenas marcar obsolete quando necessario).
 
@@ -17,12 +17,12 @@
 
 1. Antes de qualquer implementacao relevante:
 - ler CONSTITUTION.md
-- ler ia/backlog.md
-- ler ia/backlog/B-XXX.md dos itens em doing e da sprint ativa
-- ler ia/sprint.md
-- ler ia/sprint/SPR-YYYY-NN.md da sprint ativa
-- ler ia/experience.md
-- ler ia/decisions.md
+- ler scrum/backlog.md
+- ler scrum/backlog/B-XXX.md dos itens em doing e da sprint ativa
+- ler scrum/sprint.md
+- ler scrum/sprint/SPR-YYYY-NN.md da sprint ativa
+- ler scrum/experience.md
+- ler scrum/decisions.md
 
 2.1 Se a sprint estiver pausada por dependencia externa:
 - nao continuar implementacao de codigo
@@ -39,7 +39,7 @@
 4. Definition of Done (DoD):
 - teste manual documentado
 - checklist de regressao executado
-- memoria atualizada nos arquivos ia/
+- memoria atualizada nos arquivos scrum/
 
 5. Regras de arquitetura e dados:
 - migracoes devem ser reversiveis
@@ -58,27 +58,27 @@ Nenhum item deve entrar em doing sem ID e Prioridade PO.
 
 Atualizar sempre que houver mudanca:
 
-- ia/backlog.md:
+- scrum/backlog.md:
   - manter somente consolidado sintetico dos itens
 
-- ia/backlog/B-XXX.md:
+- scrum/backlog/B-XXX.md:
   - manter detalhes completos por item
   - atualizar escopo, criterios, dependencias, owner, risco e data
 
-- ia/sprint.md:
+- scrum/sprint.md:
   - manter somente consolidado sintetico das sprints
 
-- ia/sprint/SPR-YYYY-NN.md:
+- scrum/sprint/SPR-YYYY-NN.md:
   - no inicio: escopo, owners, risco e ordem
   - no fim: concluidos, pendencias e resumo
 
-- ia/architecture.md:
+- scrum/architecture.md:
   - registrar mudancas de componentes, contratos e fluxos
 
-- ia/experience.md:
+- scrum/experience.md:
   - registrar retrospectivas, incidentes, causa raiz e prevencao
 
-- ia/decisions.md:
+- scrum/decisions.md:
   - registrar decisoes de arquitetura da memoria e governanca
 
 ## Estilo de colaboracao com o owner

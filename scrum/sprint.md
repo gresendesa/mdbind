@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-06
+Last updated: 2026-06-09
 
 ## Purpose
 
@@ -107,3 +107,12 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: low (documentation only, weighted avg 1.0)
 - Result: 5/5 tasks done, 209 tests passing
 - Detailed file: scrum/sprint/SPR-2026-10.md
+
+### SPR-2026-11
+
+- Status: doing
+- Focus: B-029 — JSON context fails with YAML date metadata
+- PO Priority of items: 2 (high)
+- Sprint risk: medium (weighted avg 1.6)
+- Result: pending
+- Detailed file: scrum/sprint/SPR-2026-11.md

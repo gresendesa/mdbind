@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-06
+Last updated: 2026-06-09
 
 ## Purpose
 
@@ -54,6 +54,12 @@ Full details for each item are in dedicated files under scrum/backlog/.
 
 | ID    | Title                                               | PO Priority      | Risk     | Deps  |
 |-------|-----------------------------------------------------|------------------|----------|-------|
-| B-028 | Translate CLI help strings to English               | (pending)        | 1 (low)  | none  |
+| B-029 | JSON context fails with YAML date metadata          | 2 (high)         | 2 (medium) | none  |
+
+### Obsolete
+
+| ID    | Title                                               | PO Priority                  | Risk      | Reason |
+|-------|-----------------------------------------------------|------------------------------|-----------|--------|
+| B-028 | Translate CLI help strings to English               | not applicable               | 1 (low)   | PO decision during SPR-2026-11 planning |
 
 ## Template for new items
