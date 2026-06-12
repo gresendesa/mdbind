@@ -9,7 +9,7 @@ without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![Tests](https://img.shields.io/badge/tests-241%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
-[![Version](https://img.shields.io/badge/version-0.1.9-informational)](#installation)
+[![Version](https://img.shields.io/badge/version-0.1.10-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
 
