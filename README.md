@@ -8,8 +8,8 @@ Transform your Markdown files into a navigable knowledge graph —
 without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-209%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
-[![Version](https://img.shields.io/badge/version-0.1.8-informational)](#installation)
+[![Tests](https://img.shields.io/badge/tests-228%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
+[![Version](https://img.shields.io/badge/version-0.1.9-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
 
@@ -153,6 +153,7 @@ auth
 | `mdb compose <URI>` | Materialize a unified document (expands `@include`) |
 | `mdb validate` | Check integrity: broken refs, cycles, duplicate IDs |
 | `mdb context <URI>` | Metadata + immediate 1-hop neighborhood |
+| `mdb metadata get/update/unset <URI>` | Read or edit structured YAML metadata |
 | `mdb backlinks <URI>` | All sections that reference this URI |
 | `mdb search <predicate>` | Search sections by metadata |
 | `mdb impact <URI>` | All nodes that depend on this URI (reverse BFS) |
@@ -173,6 +174,12 @@ mdb validate --root docs/ --json
 
 # 1-hop neighborhood of a node
 mdb context docs/auth.md#auth --root docs/ --json
+
+# Read and edit structured YAML metadata without touching the Markdown body
+mdb metadata get docs/auth.md#auth owner.name --json
+mdb metadata update docs/auth.md#auth status '"review"' --json
+mdb metadata update docs/auth.md#auth owner '{"name":"Alice","team":"security"}' --json
+mdb metadata unset docs/auth.md#auth draft_notes --json
 
 # Find all sections tagged api that are not obsolete
 mdb query "tag:api AND NOT status=obsolete" --root docs/ --json

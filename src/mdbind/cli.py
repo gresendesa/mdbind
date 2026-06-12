@@ -21,6 +21,8 @@ app = typer.Typer(
     help="MdBind — Structured memory in plain Markdown.",
     add_completion=False,
 )
+metadata_app = typer.Typer(help="Read and edit structured YAML metadata blocks.")
+app.add_typer(metadata_app, name="metadata")
 
 def _split_uri(uri: str) -> tuple[str, str]:
     """Divide 'arquivo.md#id' em ('arquivo.md', 'id'). Erro se sem fragmento."""
@@ -43,6 +45,117 @@ def _json_dumps(payload: object, **kwargs) -> str:
     kwargs.setdefault("ensure_ascii", False)
     kwargs.setdefault("default", str)
     return json_mod.dumps(payload, **kwargs)
+
+
+def _resolve_section_file(uri: str) -> tuple[Path, str, str]:
+    file_path_str, section_id = _split_uri(uri)
+    file_path = Path(file_path_str).resolve()
+    abs_uri = str(file_path) + "#" + section_id
+    return file_path, section_id, abs_uri
+
+
+# ---------------------------------------------------------------------------
+# metadata
+# ---------------------------------------------------------------------------
+
+@metadata_app.command("get")
+def metadata_get(
+    uri: str = typer.Argument(..., help="Section URI in the format file.md#id"),
+    path: Optional[str] = typer.Argument(None, help="Optional dotted metadata path."),
+    json_output: bool = typer.Option(False, "--json", help="Output as JSON."),
+) -> None:
+    """
+    Reads the structured YAML metadata block for a section.
+    """
+    from mdbind.metadata import MetadataError, get_metadata_value, read_metadata
+
+    file_path, section_id, abs_uri = _resolve_section_file(uri)
+    if not file_path.exists():
+        typer.echo(f"Error: file not found: '{file_path}'", err=True)
+        raise typer.Exit(code=1)
+
+    try:
+        metadata = read_metadata(file_path, section_id)
+        value = get_metadata_value(metadata, path)
+    except (MetadataError, ParseError) as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    if json_output:
+        typer.echo(_json_dumps(
+            {"uri": abs_uri, "path": path, "value": value},
+            ensure_ascii=False,
+            indent=2,
+        ))
+    else:
+        import yaml
+
+        typer.echo(yaml.safe_dump(value, allow_unicode=True, sort_keys=False), nl=False)
+
+
+@metadata_app.command("update")
+def metadata_update(
+    uri: str = typer.Argument(..., help="Section URI in the format file.md#id"),
+    path: str = typer.Argument(..., help="Dotted metadata path to update."),
+    value: str = typer.Argument(..., help="JSON value to write."),
+    json_output: bool = typer.Option(False, "--json", help="Output as JSON."),
+) -> None:
+    """
+    Updates a value inside a section structured YAML metadata block.
+    """
+    from mdbind.metadata import MetadataError, update_metadata_file
+
+    file_path, section_id, abs_uri = _resolve_section_file(uri)
+    if not file_path.exists():
+        typer.echo(f"Error: file not found: '{file_path}'", err=True)
+        raise typer.Exit(code=1)
+
+    try:
+        metadata = update_metadata_file(file_path, section_id, path, value)
+    except (MetadataError, ParseError) as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    if json_output:
+        typer.echo(_json_dumps(
+            {"uri": abs_uri, "path": path, "metadata": metadata},
+            ensure_ascii=False,
+            indent=2,
+        ))
+    else:
+        typer.echo(f"Updated metadata path '{path}' in '{abs_uri}'.")
+
+
+@metadata_app.command("unset")
+def metadata_unset(
+    uri: str = typer.Argument(..., help="Section URI in the format file.md#id"),
+    path: str = typer.Argument(..., help="Dotted metadata path to remove."),
+    json_output: bool = typer.Option(False, "--json", help="Output as JSON."),
+) -> None:
+    """
+    Removes a value from a section structured YAML metadata block.
+    """
+    from mdbind.metadata import MetadataError, unset_metadata_file
+
+    file_path, section_id, abs_uri = _resolve_section_file(uri)
+    if not file_path.exists():
+        typer.echo(f"Error: file not found: '{file_path}'", err=True)
+        raise typer.Exit(code=1)
+
+    try:
+        metadata = unset_metadata_file(file_path, section_id, path)
+    except (MetadataError, ParseError) as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    if json_output:
+        typer.echo(_json_dumps(
+            {"uri": abs_uri, "path": path, "metadata": metadata},
+            ensure_ascii=False,
+            indent=2,
+        ))
+    else:
+        typer.echo(f"Removed metadata path '{path}' from '{abs_uri}'.")
 
 
 # ---------------------------------------------------------------------------

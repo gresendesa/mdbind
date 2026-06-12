@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-11
+Last updated: 2026-06-12
 
 ## Purpose
 
@@ -52,6 +52,7 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-029 | JSON context fails with YAML date metadata   | SPR-2026-11 |
 | B-031 | `mdb diff` fails on historical Markdown parsing with PosixPath file_path | SPR-2026-12 |
 | B-030 | Structured query pseudo-fields and regex predicates | SPR-2026-12 |
+| B-032 | `mdb metadata` commands for structured YAML metadata | SPR-2026-13 |
 
 ### Pending
 

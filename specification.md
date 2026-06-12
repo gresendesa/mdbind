@@ -224,6 +224,7 @@ Scans the full repository graph and reports all structural integrity issues with
 | Direct lookup | `get <URI>` | Retrieve raw section content by known URI |
 | Neighbor discovery | `tree <URI>` | Explore what a node connects to |
 | Context assembly | `context <URI>` | Get structured metadata + immediate neighbors |
+| Metadata editing | `metadata get/update/unset <URI>` | Read or edit structured YAML metadata |
 | Full materialization | `compose <URI>` | Expand a document tree into a single artifact |
 | Impact analysis | `impact <URI>` | Find all nodes affected by a change |
 | Semantic search | `search <predicate>` | Find nodes by metadata attributes |
@@ -375,7 +376,35 @@ Supports AND, OR, NOT operators.
 {"expression": "...", "results": [{"uri": "...", "metadata": {}}]}
 ```
 
-### 10.10. `mdb context-compose <URI> [--depth N] [--token-limit N]`
+### 10.10. `mdb metadata get|update|unset <URI>`
+
+$$f: M \times p \to M'$$
+
+Reads or mutates the structured YAML metadata block attached to a section id.
+Metadata commands operate only on the direct YAML block containing `section:`.
+They never edit Markdown body content, directives, or arbitrary YAML blocks
+outside the structured section metadata block.
+
+* **Addressing:** `URI` selects the section. Optional dotted paths such as
+  `owner.name` or `review.checklist.manual` select nested metadata values.
+* **Read:** `mdb metadata get <URI> [path]` returns either the full metadata
+  object or the selected dotted-path value.
+* **Update:** `mdb metadata update <URI> <path> <json-value>` parses
+  `<json-value>` as JSON, writes it to the selected path, creates missing
+  intermediate mappings when safe, and persists the result as YAML.
+* **Unset:** `mdb metadata unset <URI> <path>` removes the selected key without
+  removing sibling metadata.
+* **Protected field:** `section` is read-only through metadata write commands.
+* **Errors:** missing sections, missing unset paths, invalid JSON values, and
+  dotted paths crossing non-mapping values are reported as command errors.
+* **Complexity:** $O(n)$ in the source file size due to source rewrite.
+* **Output schemas:**
+```json
+{"uri": "...", "path": "owner.name | null", "value": {}}
+{"uri": "...", "path": "owner.name", "metadata": {}}
+```
+
+### 10.11. `mdb context-compose <URI> [--depth N] [--token-limit N]`
 
 $$f: G \times v \times d \times t \to \text{ContextPayload}$$
 
@@ -548,7 +577,27 @@ All commands support a `--json` flag that produces machine-readable output. The 
 }
 ```
 
-### 11.13. `mdb context-compose <URI> --json`
+### 11.13. `mdb metadata get <URI> [path] --json`
+
+```json
+{
+  "uri": "string",
+  "path": "string | null",
+  "value": "any JSON value"
+}
+```
+
+### 11.14. `mdb metadata update|unset <URI> <path> --json`
+
+```json
+{
+  "uri": "string",
+  "path": "string",
+  "metadata": "object"
+}
+```
+
+### 11.15. `mdb context-compose <URI> --json`
 
 ```json
 {

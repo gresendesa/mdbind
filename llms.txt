@@ -98,6 +98,28 @@ mdb context docs/auth.md#auth --root docs/ --json
 
 JSON output fields: `id`, `file`, `metadata`, `outgoing`, `incoming`.
 
+### mdb metadata get|update|unset <URI>
+
+Reads or edits only the structured YAML metadata block attached to a section id. These commands do not edit Markdown body content or directives.
+
+Use dotted paths for nested attributes:
+- `owner.name`
+- `review.checklist.manual`
+- `release.window.start`
+
+`metadata update` always receives the value as JSON and persists it back as YAML. This includes strings (`"review"`), booleans (`true`), arrays (`["api"]`), and nested objects (`{"name":"Alice","team":"security"}`).
+
+```
+mdb metadata get docs/auth.md#auth --json
+mdb metadata get docs/auth.md#auth owner.name --json
+mdb metadata update docs/auth.md#auth status '"review"' --json
+mdb metadata update docs/auth.md#auth owner.name '"Alice"' --json
+mdb metadata update docs/auth.md#auth owner '{"name":"Alice","team":"security"}' --json
+mdb metadata unset docs/auth.md#auth draft_notes --json
+```
+
+Do not use `metadata update` or `metadata unset` to change `section`; section ids are stable identifiers.
+
 ### mdb backlinks <URI>
 
 Lists all sections that reference the given URI (incoming edges only).

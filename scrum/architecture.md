@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-06-09
-Last updated: 2026-06-11
+Last updated: 2026-06-12
 
 ## Purpose
 
@@ -51,3 +51,23 @@ Record relevant changes to components, contracts, and flows.
   structural diff JSON schema.
 - Flow impact: Historical Markdown parsing in `mdb diff` now matches the normal
   parser contract used by `parse_file`.
+
+### 2026-06-12 - Structured metadata command family
+
+- Status: active
+- Owner: gresendesa
+- Context: Agents and users need to read and edit structured YAML section
+  metadata without touching Markdown body content or directives.
+- Change: Added `src/mdbind/metadata.py` with helpers to locate the direct YAML
+  fence containing a matching `section`, read dotted metadata paths, update
+  JSON values, unset metadata keys, and rewrite only the YAML fence content.
+  Added the `mdb metadata` Typer subcommand family in `src/mdbind/cli.py`.
+- Contract impact: Additive CLI contract. New commands are
+  `mdb metadata get <URI> [path]`, `mdb metadata update <URI> <path>
+  <json-value>`, and `mdb metadata unset <URI> <path>`. JSON output for `get`
+  is `{"uri": "...", "path": "...", "value": ...}`. JSON output for write
+  commands is `{"uri": "...", "path": "...", "metadata": {...}}`.
+- Flow impact: Metadata write operations parse the selected Markdown file,
+  locate the structured YAML block by section id, mutate only that block, and
+  persist the result as YAML. The `section` key is read-only through write
+  commands.
