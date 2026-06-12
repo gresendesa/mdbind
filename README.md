@@ -8,7 +8,7 @@ Transform your Markdown files into a navigable knowledge graph —
 without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-228%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
+[![Tests](https://img.shields.io/badge/tests-235%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
 [![Version](https://img.shields.io/badge/version-0.1.9-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
@@ -125,6 +125,29 @@ See also: [@ref: permissions model](users.md#permissions)
 - `section:` is mandatory and must be **unique per repository**
 - Any additional fields are preserved as queryable metadata
 
+### Optional schema validation
+
+A section can opt into deterministic metadata validation by adding a `schema`
+field to its YAML block. The schema reference is local-first and resolved
+relative to the repository root; `scrum/schema/` is the recommended location.
+
+````markdown
+## Authentication
+
+```yaml
+section: auth
+schema: scrum/schema/domain.schema.json
+status: active
+owner:
+  team: security
+```
+````
+
+Schemas are JSON Schema documents. They may be stored as `.json`, or as YAML
+when the YAML file encodes the same JSON Schema object. Validation is
+per-section only: there is no global repository schema, and sections without
+`schema` keep the existing free-form metadata behavior.
+
 ### Directives (graph edges)
 
 ```markdown
@@ -151,7 +174,7 @@ auth
 | `mdb get <URI>` | Extract a section with full documentary fidelity |
 | `mdb tree <URI>` | Visual dependency hierarchy |
 | `mdb compose <URI>` | Materialize a unified document (expands `@include`) |
-| `mdb validate` | Check integrity: broken refs, cycles, duplicate IDs |
+| `mdb validate` | Check integrity: broken refs, cycles, duplicate IDs, local section schemas |
 | `mdb context <URI>` | Metadata + immediate 1-hop neighborhood |
 | `mdb metadata get/update/unset <URI>` | Read or edit structured YAML metadata |
 | `mdb backlinks <URI>` | All sections that reference this URI |
@@ -171,6 +194,9 @@ All outputs are deterministic and JSON-serializable. All URIs are stable across 
 ```bash
 # Validate an entire repository
 mdb validate --root docs/ --json
+
+# Validate section metadata against local per-section schemas
+mdb validate --root . --json
 
 # 1-hop neighborhood of a node
 mdb context docs/auth.md#auth --root docs/ --json
@@ -227,7 +253,7 @@ python -m pytest
 python -m pytest tests/test_cli_validate.py -v
 ```
 
-> 209 tests, 0 failures.
+> 235 tests, 0 failures.
 
 ---
 

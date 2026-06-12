@@ -134,3 +134,12 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: medium (weighted avg 2.0)
 - Result: 11/11 tasks done, 228 tests passing
 - Detailed file: scrum/sprint/SPR-2026-13.md
+
+### SPR-2026-14
+
+- Status: done
+- Focus: B-033 - local per-section schema validation in `mdb validate`
+- PO Priority of items: B-033 = 2 (high)
+- Sprint risk: high (weighted avg 2.33)
+- Result: 10/10 tasks done, 235 tests passing; PO accepted after manual test
+- Detailed file: scrum/sprint/SPR-2026-14.md

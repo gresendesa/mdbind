@@ -71,3 +71,23 @@ Record relevant changes to components, contracts, and flows.
   locate the structured YAML block by section id, mutate only that block, and
   persist the result as YAML. The `section` key is read-only through write
   commands.
+
+### 2026-06-12 - Local per-section metadata schema validation
+
+- Status: active
+- Owner: gresendesa
+- Context: Section metadata is intentionally flexible, but some sections need a
+  deterministic contract layer to reduce ambiguity for agents and CI workflows.
+- Change: Added `src/mdbind/schema_validation.py` and integrated it into
+  `mdb validate`. Sections opt in by declaring `schema` in their structured
+  YAML metadata. The schema reference is resolved relative to the repository
+  root, with `scrum/schema/` as the documented convention. JSON Schema is the
+  normative schema language, and YAML schema files are accepted when they encode
+  a JSON Schema object.
+- Contract impact: Additive validation contract. Existing sections without
+  `schema` keep current validation behavior. `mdb validate --json` preserves
+  `type`, `uri`, and `detail` while adding schema-specific fields `schema`,
+  `schema_path`, and `path` for schema errors. Web URI schemas return
+  `schema_unsupported_uri` in this sprint.
+- Flow impact: `mdb validate` builds the graph, performs existing structural
+  checks, then validates only sections that declare `schema`.

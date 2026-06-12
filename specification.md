@@ -38,6 +38,10 @@ The metadata block does not define the section; it only confers identity to a se
 * **Internal Uniqueness:** The engine raises an error if it detects more than one `section` block within the boundaries of the same `RawSection`.
 * **Mandatory Schema:** The `id` field is strictly required. The engine emits an error (*"section without required payload"*) if the block does not have this field, since it guarantees the uniqueness of the `(file, id)` pair in the repository.
 * **Free Fields:** Fields such as `title` and `description` are reserved. Any other keys (e.g., `owner`, `tags`) are preserved in the section's dynamic dictionary.
+* **Optional Section Schema:** A section may declare `schema` to opt into
+  metadata validation. The value is a local schema reference resolved relative
+  to the repository root. `scrum/schema/` is the recommended storage location.
+  Schemas are per-section only; there is no global repository schema.
 
 The YAML block format for a section payload is:
 
@@ -49,6 +53,22 @@ section: my-section-id
 title: Human-readable title
 owner: team-name
 tags: [architecture, core]
+```
+````
+
+When `schema` is present, the referenced file must contain a JSON Schema
+document. The schema file may be JSON or YAML, as long as YAML encodes the same
+JSON Schema object:
+
+````markdown
+## My Section
+
+```yaml
+section: my-section-id
+schema: scrum/schema/work-item.schema.json
+status: doing
+owner:
+  team: core
 ```
 ````
 
@@ -200,6 +220,12 @@ Scans the full repository graph and reports all structural integrity issues with
   * Duplicate section IDs within the same repository
   * Include cycles (detected via DFS execution path tracking)
   * Sections without required `section:` payload
+  * Per-section local JSON Schema validation for sections that declare
+    `schema`
+* **Schema validation:** `schema` is resolved relative to the repository root.
+  Local JSON and YAML files are accepted when they contain a JSON Schema
+  document. Web URI schemas are not resolved by this operation and produce a
+  deterministic unsupported schema error.
 * **Exit codes:** 0 = clean, 1 = errors found
 * **Flags:** `--json` outputs `{"errors": [...], "warnings": [...], "summary": {...}}`.
 
@@ -242,12 +268,12 @@ $$f: G \to \text{ValidationReport}$$
 
 Full graph scan. Collects all structural violations without mutation.
 
-* **Algorithm:** Full DFS traversal of $G$; set membership checks for duplicate IDs; execution-path tracking for cycle detection.
+* **Algorithm:** Full DFS traversal of $G$; set membership checks for duplicate IDs; execution-path tracking for cycle detection; local schema loading and per-section metadata validation for nodes that declare `schema`.
 * **Complexity:** $O(V + E)$
 * **Output schema:**
 ```json
 {
-  "errors": [{"type": "broken_ref|broken_include|duplicate_id|missing_payload|cycle", "uri": "...", "detail": "..."}],
+  "errors": [{"type": "broken_ref|broken_include|duplicate_id|missing_payload|cycle|schema_validation_error|schema_not_found|schema_invalid|schema_unsupported_uri", "uri": "...", "detail": "...", "schema": "...", "schema_path": "...", "path": "..."}],
   "warnings": [{"type": "...", "uri": "...", "detail": "..."}],
   "summary": {"total_sections": 0, "errors": 0, "warnings": 0}
 }
@@ -492,6 +518,19 @@ All commands support a `--json` flag that produces machine-readable output. The 
     "errors": "integer",
     "warnings": "integer"
   }
+}
+```
+
+Schema validation errors extend the base error object additively:
+
+```json
+{
+  "type": "schema_validation_error | schema_not_found | schema_invalid | schema_unsupported_uri",
+  "uri": "string",
+  "detail": "string",
+  "schema": "string",
+  "schema_path": "string",
+  "path": "string"
 }
 ```
 

@@ -436,6 +436,7 @@ def validate(
     Exit code 0 = clean, 1 = errors found.
     """
     from mdbind.index import index_repository
+    from mdbind.schema_validation import validate_section_schemas
 
     repo_root = (root.resolve() if root else Path.cwd())
 
@@ -491,6 +492,9 @@ def validate(
     visited_global: set[str] = set()
     for uri in all_uris:
         _dfs_cycle(uri, frozenset(), visited_global)
+
+    # 3. Per-section local schema validation.
+    errors.extend(validate_section_schemas(graph, repo_root))
 
     summary = {
         "total_sections": len(all_uris),

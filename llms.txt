@@ -79,7 +79,7 @@ mdb compose docs/auth.md#auth --root docs/ --json
 
 ### mdb validate
 
-Checks repository integrity. Reports: broken `@ref` targets, broken `@include` targets, duplicate `section:` IDs, and include cycles.
+Checks repository integrity. Reports: broken `@ref` targets, broken `@include` targets, duplicate `section:` IDs, include cycles, and local per-section schema validation failures.
 
 ```
 mdb validate --root docs/
@@ -87,6 +87,22 @@ mdb validate --root docs/ --json
 ```
 
 Exit code `0` = repository is clean. Exit code `1` = one or more errors found.
+
+Sections can opt into metadata schema validation with a `schema` attribute in the
+structured YAML block:
+
+```yaml
+section: auth
+schema: scrum/schema/domain.schema.json
+status: active
+```
+
+`schema` references are local-first and resolved relative to the repository
+root. Prefer storing schemas under `scrum/schema/`. Schemas are JSON Schema
+documents and may be serialized as JSON or YAML. Validation is per-section
+only; sections without `schema` keep free-form metadata behavior. Do not fetch
+or resolve web URI schemas in this version. `mdb validate --json` reports
+schema errors with additive fields: `schema`, `schema_path`, and `path`.
 
 ### mdb context <URI>
 
