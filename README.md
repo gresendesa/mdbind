@@ -55,18 +55,48 @@ Every node, every edge, every relationship is visible in the source file. What a
 
 ---
 
-## Quick start
+## Installation
+
+You can install `mdbind` globally as a standalone CLI tool or locally in a virtual environment.
+
+### Global Installation (Recommended)
+
+To run `mdbind` globally without polluting your system Python packages, we recommend using [pipx](https://github.com/pypa/pipx):
 
 ```bash
-# 1. Clone and install
-git clone <repo-url> && cd mdbind
-python3 -m venv .venv && source .venv/bin/activate
-pip install -e .
+# Install the stable version from PyPI
+pipx install mdbind
 
-# 2. Point it at your docs
+# Or install the latest development version directly from GitHub
+pipx install git+https://github.com/gresendesa/mdbind.git
+```
+
+### Local Development / Virtual Environment
+
+If you prefer using standard virtual environments or want to set up a development workspace:
+
+```bash
+# Clone the repository
+git clone https://github.com/gresendesa/mdbind.git && cd mdbind
+
+# Create and activate virtual environment
+python3 -m venv .venv && source .venv/bin/activate
+
+# Install in editable mode
+pip install -e .
+```
+
+---
+
+## Quick start
+
+To start using `mdbind` in your project:
+
+```bash
+# 1. Point it at your docs folder
 mdb validate --root docs/
 
-# 3. Query the graph
+# 2. Query the graph
 mdb get docs/auth.md#auth --json
 ```
 

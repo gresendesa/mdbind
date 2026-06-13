@@ -211,11 +211,11 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 
 ### SPR-2026-22
 
-- Status: doing
+- Status: done
 - Focus: B-042 - Global installation guidance using pipx in documentation
 - PO Priority of items: B-042 = 2 (high)
 - Sprint risk: low
-- Result: in progress
+- Result: 2/2 tasks done, 262 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-22.md
 
 
