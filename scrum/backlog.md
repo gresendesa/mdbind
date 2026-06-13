@@ -62,12 +62,13 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-040 | Sequential ID Scanner & Workflow Validation (Features 2 & 3) | SPR-2026-20 |
 | B-034 | Web URI schema references for section metadata | SPR-2026-21 |
 | B-041 | Web-based template packages (fetching template ZIPs from web URIs with checksum verification) | SPR-2026-21 |
+| B-042 | Global installation guidance using pipx in documentation | SPR-2026-22 |
 
 ### Pending
 
 | ID    | Title                                            | Status | PO Priority | Risk       | Detail |
 |-------|--------------------------------------------------|--------|-------------|------------|--------|
-| B-042 | Global installation guidance using pipx in documentation | todo   | 3 (low)     | 1 (low)    | scrum/backlog/B-042.md |
+
 
 
 

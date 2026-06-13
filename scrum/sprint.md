@@ -209,5 +209,14 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Result: 8/8 tasks done, 262 tests passing; PO accepted; version bumped to 0.1.13
 - Detailed file: scrum/sprint/SPR-2026-21.md
 
+### SPR-2026-22
+
+- Status: doing
+- Focus: B-042 - Global installation guidance using pipx in documentation
+- PO Priority of items: B-042 = 2 (high)
+- Sprint risk: low
+- Result: in progress
+- Detailed file: scrum/sprint/SPR-2026-22.md
+
 
 
