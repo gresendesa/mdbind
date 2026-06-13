@@ -19,7 +19,7 @@ without databases, embeddings, or proprietary formats.
 
 ```bash
 # Install
-pip install mdbind
+pipx install mdbind
 
 # Validate your docs folder
 mdb validate --root docs/
@@ -57,11 +57,7 @@ Every node, every edge, every relationship is visible in the source file. What a
 
 ## Installation
 
-You can install `mdbind` globally as a standalone CLI tool or locally in a virtual environment.
-
-### Global Installation (Recommended)
-
-To run `mdbind` globally without polluting your system Python packages, we recommend using [pipx](https://github.com/pypa/pipx):
+To run `mdbind` globally as a standalone CLI tool without polluting your system Python packages, use [pipx](https://github.com/pypa/pipx):
 
 ```bash
 # Install the stable version from PyPI
@@ -69,21 +65,6 @@ pipx install mdbind
 
 # Or install the latest development version directly from GitHub
 pipx install git+https://github.com/gresendesa/mdbind.git
-```
-
-### Local Development / Virtual Environment
-
-If you prefer using standard virtual environments or want to set up a development workspace:
-
-```bash
-# Clone the repository
-git clone https://github.com/gresendesa/mdbind.git && cd mdbind
-
-# Create and activate virtual environment
-python3 -m venv .venv && source .venv/bin/activate
-
-# Install in editable mode
-pip install -e .
 ```
 
 ---
