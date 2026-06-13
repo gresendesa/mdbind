@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-12
+Last updated: 2026-06-13
 
 ## Purpose
 
@@ -152,3 +152,13 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: medium (weighted avg 1.89)
 - Result: 9/9 tasks done, 241 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-15.md
+
+### SPR-2026-16
+
+- Status: done
+- Focus: B-036 - file-relative schema reference resolution
+- PO Priority of items: B-036 = 1 (critical)
+- Sprint risk: medium (weighted avg 1.67)
+- Result: 6/6 tasks done, 242 tests passing; PO accepted; version bumped to
+  0.1.11
+- Detailed file: scrum/sprint/SPR-2026-16.md

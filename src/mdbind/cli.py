@@ -54,7 +54,7 @@ def _resolve_section_file(uri: str) -> tuple[Path, str, str]:
     return file_path, section_id, abs_uri
 
 
-def _validation_report(graph, schema_root: Path) -> tuple[list[dict], list[dict], dict]:
+def _validation_report(graph) -> tuple[list[dict], list[dict], dict]:
     from mdbind.schema_validation import validate_section_schemas
 
     errors: list[dict] = []
@@ -100,7 +100,7 @@ def _validation_report(graph, schema_root: Path) -> tuple[list[dict], list[dict]
         _dfs_cycle(uri, frozenset(), visited_global)
 
     # 3. Per-section local schema validation.
-    errors.extend(validate_section_schemas(graph, schema_root))
+    errors.extend(validate_section_schemas(graph))
 
     summary = {
         "total_sections": len(all_uris),
@@ -528,10 +528,9 @@ def validate(
                 for directive in section.directives:
                     if directive.type in ("ref", "include"):
                         graph.add_edge(section.uri, directive.target_uri)
-            schema_root = file_path.parent
         else:
-            schema_root = (root.resolve() if root else Path.cwd())
-            graph = index_repository(schema_root)
+            repo_root = (root.resolve() if root else Path.cwd())
+            graph = index_repository(repo_root)
     except ParseError as exc:
         errors = [{"type": "parse_error", "uri": "", "detail": str(exc)}]
         summary = {"total_sections": 0, "total_edges": 0, "errors": 1, "warnings": 0}
@@ -541,7 +540,7 @@ def validate(
             typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(code=1)
 
-    errors, warnings, summary = _validation_report(graph, schema_root)
+    errors, warnings, summary = _validation_report(graph)
 
     if json_output:
         typer.echo(_json_dumps(

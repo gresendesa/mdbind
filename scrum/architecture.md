@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-06-09
-Last updated: 2026-06-12
+Last updated: 2026-06-13
 
 ## Purpose
 
@@ -74,7 +74,7 @@ Record relevant changes to components, contracts, and flows.
 
 ### 2026-06-12 - Local per-section metadata schema validation
 
-- Status: active
+- Status: replaced by 2026-06-13 schema reference resolution invariant
 - Owner: gresendesa
 - Context: Section metadata is intentionally flexible, but some sections need a
   deterministic contract layer to reduce ambiguity for agents and CI workflows.
@@ -92,6 +92,25 @@ Record relevant changes to components, contracts, and flows.
 - Flow impact: `mdb validate` builds the graph, performs existing structural
   checks, then validates only sections that declare `schema`.
 
+### 2026-06-13 - Schema reference resolution invariant
+
+- Status: active
+- Owner: gresendesa
+- Context: Schema validation had two documented bases: repository root in
+  `--root` mode and selected file parent in `--file` mode. The PO selected a
+  single invariant to avoid command-dependent meaning for the same section
+  metadata.
+- Change: `src/mdbind/schema_validation.py` now resolves each local `schema`
+  reference from `Path(section.file_path).parent`, regardless of whether
+  validation was started with `--root` or `--file`.
+- Contract impact: `schema` is always relative to the Markdown file containing
+  the section that declares it. `mdb validate` does not take a global schema
+  directory for ordinary relative paths. Centralized schema folders must be
+  referenced explicitly with normal relative paths.
+- Flow impact: Repository validation can validate sections in different
+  directories against different local schema folders without changing the CLI
+  invocation.
+
 ### 2026-06-12 - File-scoped validation mode
 
 - Status: active
@@ -102,8 +121,8 @@ Record relevant changes to components, contracts, and flows.
   validation mode. `--root` remains the recursive integrated repository mode,
   and using both options together is rejected.
 - Contract impact: Additive CLI contract. JSON output keeps the same
-  `errors`, `warnings`, and `summary` shape. In file mode, local schema
-  references are resolved relative to the selected file's parent directory.
+  `errors`, `warnings`, and `summary` shape. Schema references follow the
+  active file-relative schema resolution invariant.
 - Flow impact: File mode parses the selected file, builds an in-memory graph
   only from its sections, and runs the same structural and schema checks used
   by root mode. Cross-file refs/includes may be reported as broken because no

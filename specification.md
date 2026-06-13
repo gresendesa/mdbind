@@ -40,8 +40,8 @@ The metadata block does not define the section; it only confers identity to a se
 * **Free Fields:** Fields such as `title` and `description` are reserved. Any other keys (e.g., `owner`, `tags`) are preserved in the section's dynamic dictionary.
 * **Optional Section Schema:** A section may declare `schema` to opt into
   metadata validation. The value is a local schema reference resolved relative
-  to the repository root. `scrum/schema/` is the recommended storage location.
-  Schemas are per-section only; there is no global repository schema.
+  to the Markdown file that contains the section. Schemas are per-section only;
+  there is no global repository schema.
 
 The YAML block format for a section payload is:
 
@@ -65,7 +65,7 @@ JSON Schema object:
 
 ```yaml
 section: my-section-id
-schema: scrum/schema/work-item.schema.json
+schema: schema/work-item.schema.json
 status: doing
 owner:
   team: core
@@ -229,11 +229,11 @@ all structural integrity issues without modifying any file.
 * **File isolation:** in `--file` mode, references or includes to sections
   outside the selected file may be reported as broken because no external graph
   context is loaded.
-* **Schema validation:** in `--root` mode, `schema` is resolved relative to the
-  repository root. In `--file` mode, `schema` is resolved relative to the
-  selected file's parent directory. Local JSON and YAML files are accepted when
-  they contain a JSON Schema document. Web URI schemas are not resolved by this
-  operation and produce a deterministic unsupported schema error.
+* **Schema validation:** `schema` is always resolved relative to the Markdown
+  file that contains the section, in both `--root` and `--file` modes. Local
+  JSON and YAML files are accepted when they contain a JSON Schema document. Web
+  URI schemas are not resolved by this operation and produce a deterministic
+  unsupported schema error.
 * **Exit codes:** 0 = clean, 1 = errors found
 * **Flags:** `--json` outputs `{"errors": [...], "warnings": [...], "summary": {...}}`.
 

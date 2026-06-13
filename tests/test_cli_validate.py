@@ -258,6 +258,40 @@ class TestValidateSchema:
         data = json.loads(result.output)
         assert data["summary"]["errors"] == 0
 
+    def test_root_validation_resolves_schema_relative_to_section_file(self, tmp_path):
+        docs = tmp_path / "docs"
+        schema_dir = docs / "schema"
+        schema_dir.mkdir(parents=True)
+        schema = schema_dir / "section.schema.json"
+        schema.write_text(
+            json.dumps({
+                "type": "object",
+                "required": ["id", "schema", "status"],
+                "properties": {
+                    "id": {"type": "string"},
+                    "schema": {"type": "string"},
+                    "status": {"enum": ["todo", "doing", "done"]},
+                },
+            }),
+            encoding="utf-8",
+        )
+        md = docs / "doc.md"
+        md.write_text(
+            "# Section A\n\n"
+            "```yaml\n"
+            "section: a\n"
+            "schema: schema/section.schema.json\n"
+            "status: done\n"
+            "```\n",
+            encoding="utf-8",
+        )
+
+        result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["summary"]["errors"] == 0
+
     def test_missing_schema_file_is_deterministic_error(self, tmp_path):
         md = tmp_path / "doc.md"
         md.write_text(
@@ -378,7 +412,7 @@ class TestValidateFile:
         assert data["errors"][0]["type"] == "parse_error"
         assert "file not found" in data["errors"][0]["detail"]
 
-    def test_validate_file_schema_uses_file_parent_as_schema_root(self, tmp_path):
+    def test_validate_file_schema_uses_section_file_parent(self, tmp_path):
         schema_dir = tmp_path / "schema"
         schema_dir.mkdir()
         schema = schema_dir / "section.schema.json"

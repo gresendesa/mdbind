@@ -101,18 +101,18 @@ structured YAML block:
 
 ```yaml
 section: auth
-schema: scrum/schema/domain.schema.json
+schema: schema/domain.schema.json
 status: active
 ```
 
-`schema` references are local-first. In `--root` mode they are resolved relative
-to the repository root; in `--file` mode they are resolved relative to the
-selected file's parent directory. Prefer storing repository schemas under
-`scrum/schema/`. Schemas are JSON Schema documents and may be serialized as JSON
-or YAML. Validation is per-section only; sections without `schema` keep
-free-form metadata behavior. Do not fetch or resolve web URI schemas in this
-version. `mdb validate --json` reports schema errors with additive fields:
-`schema`, `schema_path`, and `path`.
+`schema` references are local-first and always resolved relative to the
+Markdown file that contains the section, in both `--root` and `--file` modes.
+Prefer a colocated `schema/` directory or explicit relative paths to a
+centralized schema directory. Schemas are JSON Schema documents and may be
+serialized as JSON or YAML. Validation is per-section only; sections without
+`schema` keep free-form metadata behavior. Do not fetch or resolve web URI
+schemas in this version. `mdb validate --json` reports schema errors with
+additive fields: `schema`, `schema_path`, and `path`.
 
 ### mdb context <URI>
 

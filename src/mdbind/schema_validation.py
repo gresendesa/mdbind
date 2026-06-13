@@ -19,9 +19,8 @@ class SchemaValidationError(Exception):
         self.error_type = error_type
 
 
-def validate_section_schemas(graph, repo_root: Path) -> list[dict[str, Any]]:
+def validate_section_schemas(graph) -> list[dict[str, Any]]:
     errors: list[dict[str, Any]] = []
-    root = repo_root.resolve()
 
     for uri, section in sorted(graph.index.sections.items()):
         schema_ref = section.metadata.get("schema")
@@ -47,7 +46,8 @@ def validate_section_schemas(graph, repo_root: Path) -> list[dict[str, Any]]:
             ))
             continue
 
-        schema_path = _resolve_schema_path(root, schema_ref)
+        schema_base = Path(section.file_path).resolve().parent
+        schema_path = _resolve_schema_path(schema_base, schema_ref)
         try:
             schema = _load_schema(schema_path)
             _validate_with_jsonschema(section.metadata, schema)

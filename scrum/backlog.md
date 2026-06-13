@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-12
+Last updated: 2026-06-13
 
 ## Purpose
 
@@ -55,6 +55,7 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-032 | `mdb metadata` commands for structured YAML metadata | SPR-2026-13 |
 | B-033 | Local schema validation for structured section metadata | SPR-2026-14 |
 | B-035 | File-scoped validation mode for `mdb validate` | SPR-2026-15 |
+| B-036 | File-relative schema reference resolution | SPR-2026-16 |
 
 ### Pending
 

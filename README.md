@@ -8,8 +8,8 @@ Transform your Markdown files into a navigable knowledge graph —
 without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-241%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
-[![Version](https://img.shields.io/badge/version-0.1.10-informational)](#installation)
+[![Tests](https://img.shields.io/badge/tests-242%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
+[![Version](https://img.shields.io/badge/version-0.1.11-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
 
@@ -129,14 +129,16 @@ See also: [@ref: permissions model](users.md#permissions)
 
 A section can opt into deterministic metadata validation by adding a `schema`
 field to its YAML block. The schema reference is local-first and resolved
-relative to the repository root; `scrum/schema/` is the recommended location.
+relative to the Markdown file that contains the section. A colocated
+`schema/` directory is the recommended default; centralized schema directories
+can still be referenced with normal relative paths.
 
 ````markdown
 ## Authentication
 
 ```yaml
 section: auth
-schema: scrum/schema/domain.schema.json
+schema: schema/domain.schema.json
 status: active
 owner:
   team: security
