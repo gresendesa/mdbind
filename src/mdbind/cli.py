@@ -24,6 +24,29 @@ app = typer.Typer(
 metadata_app = typer.Typer(help="Read and edit structured YAML metadata blocks.")
 app.add_typer(metadata_app, name="metadata")
 
+
+def version_callback(value: bool):
+    if value:
+        from mdbind import __version__
+        typer.echo(f"mdb version {__version__}")
+        raise typer.Exit()
+
+
+@app.callback()
+def main(
+    version: Optional[bool] = typer.Option(
+        None,
+        "--version",
+        help="Show the version and exit.",
+        callback=version_callback,
+        is_eager=True,
+    ),
+):
+    """
+    MdBind — Structured memory in plain Markdown.
+    """
+    pass
+
 def _split_uri(uri: str) -> tuple[str, str]:
     """Divide 'arquivo.md#id' em ('arquivo.md', 'id'). Erro se sem fragmento."""
     if "#" not in uri:

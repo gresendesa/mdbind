@@ -8,7 +8,7 @@ Transform your Markdown files into a navigable knowledge graph —
 without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-262%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
+[![Tests](https://img.shields.io/badge/tests-263%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
 [![Version](https://img.shields.io/badge/version-0.1.13-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
@@ -290,7 +290,7 @@ python -m pytest
 python -m pytest tests/test_cli_validate.py -v
 ```
 
-> 262 tests, 0 failures.
+> 263 tests, 0 failures.
 
 ---
 
