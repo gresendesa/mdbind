@@ -68,6 +68,7 @@ Full details for each item are in dedicated files under scrum/backlog/.
 
 | ID    | Title                                            | Status | PO Priority | Risk       | Detail |
 |-------|--------------------------------------------------|--------|-------------|------------|--------|
+| B-043 | Session hijacking and instruction hooks for LLM dev environments | todo   | 1 (critical)| 2 (medium) | scrum/backlog/B-043.md |
 
 
 
