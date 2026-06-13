@@ -226,9 +226,11 @@ all structural integrity issues without modifying any file.
 * **Scope:** `--root <path>` performs recursive integrated repository
   validation. `--file <path.md>` validates only the selected file. `--root` and
   `--file` are mutually exclusive.
-* **File isolation:** in `--file` mode, references or includes to sections
-  outside the selected file may be reported as broken because no external graph
-  context is loaded.
+* **File isolation:** in `--file` mode, references or includes to sections in
+  other files are treated as external to the isolated index and are not reported
+  as ordinary `broken_ref` or `broken_include` errors. References/includes
+  targeting missing sections in the selected file still fail. Use `--root` for
+  integrated repository-wide ref/include validation.
 * **Schema validation:** `schema` is always resolved relative to the Markdown
   file that contains the section, in both `--root` and `--file` modes. Local
   JSON and YAML files are accepted when they contain a JSON Schema document. Web

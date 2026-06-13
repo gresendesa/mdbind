@@ -54,7 +54,7 @@ def _resolve_section_file(uri: str) -> tuple[Path, str, str]:
     return file_path, section_id, abs_uri
 
 
-def _validation_report(graph) -> tuple[list[dict], list[dict], dict]:
+def _validation_report(graph, *, isolated_file: Path | None = None) -> tuple[list[dict], list[dict], dict]:
     from mdbind.schema_validation import validate_section_schemas
 
     errors: list[dict] = []
@@ -68,6 +68,11 @@ def _validation_report(graph) -> tuple[list[dict], list[dict], dict]:
         for directive in section.directives:
             if directive.type in ("ref", "include"):
                 if directive.target_uri not in all_uris:
+                    if isolated_file is not None and _is_external_target(
+                        directive.target_uri,
+                        isolated_file,
+                    ):
+                        continue
                     error_type = "broken_ref" if directive.type == "ref" else "broken_include"
                     errors.append({
                         "type": error_type,
@@ -109,6 +114,13 @@ def _validation_report(graph) -> tuple[list[dict], list[dict], dict]:
         "warnings": len(warnings),
     }
     return errors, warnings, summary
+
+
+def _is_external_target(uri: str, isolated_file: Path) -> bool:
+    path_part = uri.split("#", 1)[0]
+    if not path_part:
+        return False
+    return Path(path_part).resolve() != isolated_file.resolve()
 
 
 # ---------------------------------------------------------------------------
@@ -540,7 +552,10 @@ def validate(
             typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(code=1)
 
-    errors, warnings, summary = _validation_report(graph)
+    errors, warnings, summary = _validation_report(
+        graph,
+        isolated_file=file_path if file is not None else None,
+    )
 
     if json_output:
         typer.echo(_json_dumps(

@@ -57,6 +57,7 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-035 | File-scoped validation mode for `mdb validate` | SPR-2026-15 |
 | B-036 | File-relative schema reference resolution | SPR-2026-16 |
 | B-037 | Schema-backed project memory normalization | SPR-2026-17 |
+| B-038 | `mdb validate --file` reports valid external refs as broken | SPR-2026-18 |
 
 ### Pending
 

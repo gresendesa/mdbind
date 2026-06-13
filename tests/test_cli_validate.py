@@ -377,20 +377,50 @@ class TestValidateFile:
         assert "summary" in data
         assert data["summary"]["total_edges"] == 0
 
-    def test_validate_file_reports_cross_file_ref_as_broken(self, tmp_path):
+    def test_validate_file_ignores_external_ref_not_indexed(self, tmp_path):
         one = tmp_path / "one.md"
         two = tmp_path / "two.md"
         one.write_text(
-            "# One\n\n```yaml\nsection: one\n```\n\n[@ref: two](two.md#two)\n",
+            "# One\n\n"
+            "```yaml\nsection: one\n```\n\n"
+            "[@ref: two](two.md#two)\n"
+            "[@include: two](two.md#two)\n",
             encoding="utf-8",
         )
         two.write_text("# Two\n\n```yaml\nsection: two\n```\n", encoding="utf-8")
 
         result = runner.invoke(app, ["validate", "--file", str(one), "--json"])
 
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["summary"]["total_sections"] == 1
+        assert data["summary"]["errors"] == 0
+
+    def test_validate_file_reports_same_file_ref_as_broken(self, tmp_path):
+        md = tmp_path / "doc.md"
+        md.write_text(
+            "# One\n\n```yaml\nsection: one\n```\n\n[@ref: missing](#missing)\n",
+            encoding="utf-8",
+        )
+
+        result = runner.invoke(app, ["validate", "--file", str(md), "--json"])
+
         assert result.exit_code == 1
         data = json.loads(result.output)
         assert data["summary"]["total_sections"] == 1
+        assert data["errors"][0]["type"] == "broken_ref"
+
+    def test_validate_root_reports_external_ref_as_broken(self, tmp_path):
+        md = tmp_path / "doc.md"
+        md.write_text(
+            "# One\n\n```yaml\nsection: one\n```\n\n[@ref: missing](missing.md#missing)\n",
+            encoding="utf-8",
+        )
+
+        result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
+
+        assert result.exit_code == 1
+        data = json.loads(result.output)
         assert data["errors"][0]["type"] == "broken_ref"
 
     def test_validate_file_rejects_root_conflict(self, tmp_path):

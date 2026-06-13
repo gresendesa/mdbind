@@ -8,8 +8,8 @@ Transform your Markdown files into a navigable knowledge graph —
 without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-242%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
-[![Version](https://img.shields.io/badge/version-0.1.11-informational)](#installation)
+[![Tests](https://img.shields.io/badge/tests-244%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
+[![Version](https://img.shields.io/badge/version-0.1.12-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
 
@@ -199,6 +199,9 @@ mdb validate --root docs/ --json
 
 # Validate one Markdown file in isolation
 mdb validate --file docs/auth.md --json
+
+# Single-file mode skips ordinary broken-ref errors for refs/includes that
+# point to other files; use --root when validating the full project graph.
 
 # Validate section metadata against local per-section schemas
 mdb validate --root . --json

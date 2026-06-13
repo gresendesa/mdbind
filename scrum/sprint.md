@@ -171,3 +171,13 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: medium (weighted avg 2.25)
 - Result: 8/8 tasks done, 242 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-17.md
+
+### SPR-2026-18
+
+- Status: done
+- Focus: B-038 - file-mode external ref validation false positives
+- PO Priority of items: B-038 = 2 (high)
+- Sprint risk: medium (weighted avg 2.22)
+- Result: 9/9 tasks done, 244 tests passing; PO accepted; version bumped to
+  0.1.12
+- Detailed file: scrum/sprint/SPR-2026-18.md

@@ -93,8 +93,10 @@ Exit code `0` = repository is clean. Exit code `1` = one or more errors found.
 Use `--root` for integrated recursive repository validation. Use `--file` for
 isolated validation of a single Markdown file while editing. `--root` and
 `--file` are mutually exclusive. In `--file` mode, references or includes to
-sections outside the selected file may be reported as broken because no external
-repository context is loaded.
+sections outside the selected file are treated as external to the isolated index
+and are not reported as ordinary `broken_ref` or `broken_include` errors.
+References/includes to missing sections inside the selected file still fail.
+Use `--root` when repository-wide ref/include validation is required.
 
 Sections can opt into metadata schema validation with a `schema` attribute in the
 structured YAML block:
