@@ -1,0 +1,36 @@
+name: smd-engineering
+version: "0.1.0"
+description: ADR and RFC-centric template package for technical engineering development memory.
+author: MdBind maintainers
+template_engine: jinja2
+smd_version: "0.1.0"
+instructions:
+  - engineering/instructions/LLM.md
+variables:
+  - name: project_name
+    prompt: Project name
+    default: engineering-project
+    required: true
+  - name: owner
+    prompt: Owner
+    default: Lead Architect
+    required: true
+files:
+  - template: engineering/ADR.md.j2
+    target: engineering/ADR.md
+  - template: engineering/ROADMAP.md.j2
+    target: engineering/ROADMAP.md
+  - template: engineering/instructions/LLM.md
+    target: engineering/instructions/LLM.md
+  - template: engineering/adr/.gitkeep
+    target: engineering/adr/.gitkeep
+  - template: engineering/rfcs/.gitkeep
+    target: engineering/rfcs/.gitkeep
+compatibility:
+  manifest_version: "1"
+  signature_policy: checksum-only
+entrypoints:
+  base_memory:
+    - engineering/ADR.md
+    - engineering/ROADMAP.md
+tags: [engineering, adr, rfc, memory, ai, mdbind]

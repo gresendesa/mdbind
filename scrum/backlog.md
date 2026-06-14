@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-13
+Last updated: 2026-06-14
 
 ## Purpose
 
@@ -64,15 +64,13 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-041 | Web-based template packages (fetching template ZIPs from web URIs with checksum verification) | SPR-2026-21 |
 | B-042 | Global installation guidance using pipx in documentation | SPR-2026-22 |
 | B-043 | Session hijacking and instruction hooks for LLM dev environments | SPR-2026-23 |
+| B-044 | Manage agent session hooks via CLI command       | SPR-2026-24 |
+| B-045 | Implement Kanban, Shape Up, ADR, and Minimal template packages | SPR-2026-25 |
 
 ### Pending
 
 | ID    | Title                                            | Status | PO Priority | Risk       | Detail |
 |-------|--------------------------------------------------|--------|-------------|------------|--------|
-| B-044 | Manage agent session hooks via CLI command       | todo   | 1           | 2          | scrum/backlog/B-044.md |
-
-
-
 
 
 

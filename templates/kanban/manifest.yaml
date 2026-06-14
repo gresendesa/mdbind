@@ -1,0 +1,35 @@
+name: smd-kanban
+version: "0.1.0"
+description: Kanban template package for continuous flow-based AI-operated memory.
+author: MdBind maintainers
+template_engine: jinja2
+smd_version: "0.1.0"
+instructions:
+  - kanban/instructions/LLM.md
+variables:
+  - name: project_name
+    prompt: Project name
+    default: kanban-project
+    required: true
+  - name: owner
+    prompt: Owner
+    default: Developer
+    required: true
+files:
+  - template: kanban/BOARD.md.j2
+    target: kanban/BOARD.md
+  - template: kanban/decisions.md.j2
+    target: kanban/decisions.md
+  - template: kanban/lessons.md.j2
+    target: kanban/lessons.md
+  - template: kanban/instructions/LLM.md
+    target: kanban/instructions/LLM.md
+compatibility:
+  manifest_version: "1"
+  signature_policy: checksum-only
+entrypoints:
+  base_memory:
+    - kanban/BOARD.md
+    - kanban/decisions.md
+    - kanban/lessons.md
+tags: [kanban, memory, ai, mdbind]

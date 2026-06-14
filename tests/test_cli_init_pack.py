@@ -230,3 +230,44 @@ def test_init_fails_path_traversal(temp_workspace: Path, tmp_path: Path):
     context = {"project_name": "P1", "owner": "Alice"}
     with pytest.raises(TemplatePackageError, match="Template package contains an unsafe path"):
         init_from_template_package(traversal_zip, target_root, context)
+
+
+def test_init_real_templates(tmp_path: Path):
+    templates_dir = Path(__file__).parent.parent / "templates"
+    for name, expected_file in [
+        ("kanban", "kanban/BOARD.md"),
+        ("product", "product/PITCHES.md"),
+        ("engineering", "engineering/ADR.md"),
+        ("minimal", "minimal/README.md"),
+    ]:
+        template_src = templates_dir / name
+        assert template_src.exists(), f"Template {name} does not exist at {template_src}"
+        
+        output_zip = tmp_path / f"{name}.zip"
+        pack_template_package(template_src, output_zip)
+        assert output_zip.exists()
+        
+        target_root = tmp_path / f"target_{name}"
+        target_root.mkdir()
+        
+        context = {
+            "project_name": f"Test {name}",
+            "owner": "Test Owner",
+        }
+        
+        result = init_from_template_package(
+            output_zip,
+            target_root,
+            context,
+            memory_root=name,
+            template_profile="standard",
+            hook_placement="none"
+        )
+        
+        assert result.package["name"] == f"smd-{name}"
+        expected_path = target_root / expected_file
+        assert expected_path.exists()
+        
+        content = expected_path.read_text(encoding="utf-8")
+        assert f"Test {name}" in content
+

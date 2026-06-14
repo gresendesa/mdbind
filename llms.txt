@@ -232,6 +232,13 @@ mdb pack templates/scrum -o scrum_template.zip --force
 
 Initializes a new directory using a signed template `.zip` package (either local path or remote URL). Verifies member paths against traversal attacks and checks hashes against `SIGNATURE.yaml`. Downloads of remote templates require `--checksum <hash>`. Renders files using Jinja2 resolving variables via defaults, prompt inputs, context files, or `--var` overrides, and writes a `.mdb/config.yaml` tracking configuration. Remote downloads are cached in `.mdb/cache/templates/` under their URL hash. Use `--no-cache` to force remote template redownload.
 
+Standard templates provided in the repository under `templates/`:
+- `default`: Agile Scrum memory (backlog, sprints, constitution, decisions).
+- `kanban`: Flow-based Kanban board and logs.
+- `product`: Product pitches and cycle specs (Shape Up).
+- `engineering`: Technical design decision logs (ADR/RFC) and roadmap.
+- `minimal`: Minimalist task list and changelog.
+
 Supports injecting agent instruction rules hooks to dev entrypoints (`AGENTS.md`, `.github/copilot-instructions.md`) and generating a 5-word secret canary phrase. Customize hook placement with `--hook-placement [top|bottom|none]` and override the secret phrase with `--hook-secret <phrase>`.
 
 ```

@@ -3,7 +3,7 @@
 Document status: active
 Owner: gresendesa
 Creation date: 2026-04-08
-Last updated: 2026-06-13
+Last updated: 2026-06-14
 
 ## Purpose
 
@@ -235,6 +235,16 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Sprint risk: low
 - Result: 5/5 tasks done, 267 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-24.md
+
+### SPR-2026-25
+
+- Status: done
+- Focus: B-045 - Implement Kanban, Shape Up, ADR, and Minimal template packages
+- PO Priority of items: B-045 = 1 (critical)
+- Sprint risk: medium
+- Result: 6/6 tasks done, 268 tests passing; PO accepted
+- Detailed file: scrum/sprint/SPR-2026-25.md
+
 
 
 

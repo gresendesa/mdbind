@@ -242,11 +242,19 @@ mdb context-compose docs/auth.md#auth --root docs/ --depth 2 --token-limit 2000 
 # What changed structurally since the last commit?
 mdb diff --root docs/ --since HEAD~1 --json
 
-# Pack a template directory
-mdb pack templates/scrum -o scrum_template.zip
+# Pack a template directory (e.g. the default scrum template, or kanban/product/engineering/minimal)
+mdb pack templates/default -o scrum_template.zip
+mdb pack templates/kanban -o kanban_template.zip
 
 # Initialize a workspace memory using a local template zip
 mdb init -t scrum_template.zip -r my_new_project/ --var project_name="My New App" --var owner="Bob"
+
+# Pre-bundled template packages in the repository:
+# - templates/default: Full Scrum/Sprint agile memory foundation
+# - templates/kanban: Continuous delivery flow-based board, decisions, and lessons learned
+# - templates/product: Product-driven pitches and cycle specifications (Shape Up style)
+# - templates/engineering: Architecture Decision Records (ADR) and roadmap log
+# - templates/minimal: Low-friction, lightweight to-do checklist and changelog
 
 # Initialize a workspace memory using a remote web-based template package (requires --checksum)
 mdb init -t https://example.com/templates/scrum.zip -r my_new_project/ --checksum d8f2a...f7c22 --var project_name="My New App" --var owner="Bob"

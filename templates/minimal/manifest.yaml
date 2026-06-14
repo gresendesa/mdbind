@@ -1,0 +1,34 @@
+name: smd-minimal
+version: "0.1.0"
+description: Minimal template package for lightweight development memory.
+author: MdBind maintainers
+template_engine: jinja2
+smd_version: "0.1.0"
+instructions:
+  - minimal/instructions/LLM.md
+variables:
+  - name: project_name
+    prompt: Project name
+    default: minimal-project
+    required: true
+  - name: owner
+    prompt: Owner
+    default: Owner
+    required: true
+files:
+  - template: minimal/README.md.j2
+    target: minimal/README.md
+  - template: minimal/todo.md.j2
+    target: minimal/todo.md
+  - template: minimal/CHANGELOG.md.j2
+    target: minimal/CHANGELOG.md
+  - template: minimal/instructions/LLM.md
+    target: minimal/instructions/LLM.md
+compatibility:
+  manifest_version: "1"
+  signature_policy: checksum-only
+entrypoints:
+  base_memory:
+    - minimal/README.md
+    - minimal/todo.md
+tags: [minimal, memory, ai, mdbind]

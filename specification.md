@@ -253,6 +253,12 @@ Initializes a new directory using a signed template `.zip` package from a local 
 * **Mechanics:** Unpacks the template package to a temporary directory, verifies the ZIP member paths against traversal attacks, and verifies file checksums against `SIGNATURE.yaml`.
 * **Remote Templates & Checksum Verification:** Supports downloading remote template `.zip` files via HTTP/HTTPS. Remote downloads require the `--checksum <hash>` option to verify the integrity (SHA-256) of the package. Checked-out packages are cached in `.mdb/cache/templates/` under their URL hash to avoid duplicate downloads.
 * **Rendering:** Renders the template files into the target project using Jinja2 engine, resolving variables specified in `manifest.yaml`.
+* **Standard Methodology Templates:** The repository includes five pre-bundled template directories under `templates/` that support different developer workflows and management methodologies:
+  * **Default/Scrum** (`templates/default`): Complete Agile Scrum framework memory (backlog, sprint tracking, constitution, decisions).
+  * **Kanban** (`templates/kanban`): Continuous delivery flow-based board, architectural decisions, and lessons learned.
+  * **Shape Up / Product** (`templates/product`): Product pitches, development cycles, and architectural scoping logs.
+  * **ADR / RFC-Centric** (`templates/engineering`): Structured design decision records (ADRs) and release roadmap management.
+  * **Minimal** (`templates/minimal`): Minimalist lightweight task checklist and chronological project changelog.
 * **Configuration:** Writes a `.mdb/config.yaml` file in the root of the project containing project metadata, memory root folder, and template package properties.
 * **Architectural Rationale:** The configuration resides at the repository root under `.mdb/config.yaml` rather than inside the memory folder itself. This serves as a project-wide marker declaring that the workspace is managed by `mdbind`, maps project-wide variables, allows future CLI commands to resolve `--root` automatically from the config, and keeps the repository root uncluttered by using a dedicated `.mdb/` directory for configuration and future indexing cache (including remote schemas and templates).
 * **Interactive and Non-Interactive:** Supports interactive CLI prompt resolution, or non-interactive mode via `--context <file>` or `--var key=value` arguments.

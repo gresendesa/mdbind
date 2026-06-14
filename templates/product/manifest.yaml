@@ -1,0 +1,36 @@
+name: smd-product
+version: "0.1.0"
+description: Product-driven template package for Shape Up style development memory.
+author: MdBind maintainers
+template_engine: jinja2
+smd_version: "0.1.0"
+instructions:
+  - product/instructions/LLM.md
+variables:
+  - name: project_name
+    prompt: Project name
+    default: product-project
+    required: true
+  - name: owner
+    prompt: Owner
+    default: Product Owner
+    required: true
+files:
+  - template: product/PITCHES.md.j2
+    target: product/PITCHES.md
+  - template: product/decisions.md.j2
+    target: product/decisions.md
+  - template: product/instructions/LLM.md
+    target: product/instructions/LLM.md
+  - template: product/cycles/.gitkeep
+    target: product/cycles/.gitkeep
+  - template: product/specs/.gitkeep
+    target: product/specs/.gitkeep
+compatibility:
+  manifest_version: "1"
+  signature_policy: checksum-only
+entrypoints:
+  base_memory:
+    - product/PITCHES.md
+    - product/decisions.md
+tags: [product, shape-up, memory, ai, mdbind]
