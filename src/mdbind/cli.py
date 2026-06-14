@@ -1525,14 +1525,14 @@ def pack(
 
 
 def locate_templates_dir() -> Path:
-    # 1. Check relative to this file in development (repo root / templates)
+    # 1. Check as package resource / installed data / development (src/mdbind/templates)
+    pkg_path = Path(__file__).resolve().parent / "templates"
+    if pkg_path.exists() and pkg_path.is_dir():
+        return pkg_path
+    # 2. Check relative to this file in development (repo root / templates - for backward compatibility)
     dev_path = Path(__file__).resolve().parent.parent.parent / "templates"
     if dev_path.exists() and dev_path.is_dir():
         return dev_path
-    # 2. Check as package resource / installed data
-    installed_path = Path(__file__).resolve().parent / "templates"
-    if installed_path.exists() and installed_path.is_dir():
-        return installed_path
     # 3. Fallback to site-packages level
     fallback_path = Path(__file__).resolve().parent.parent / "templates"
     if fallback_path.exists() and fallback_path.is_dir():

@@ -263,7 +263,11 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Result: 10/10 tasks done, 274 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-27.md
 
+### SPR-2026-28
 
-
-
-
+- Status: done
+- Focus: B-050 - Fix local template packaging inside Python package
+- PO Priority of items: B-050 = 1 (critical)
+- Sprint risk: low
+- Result: 1/1 task done, 274 tests passing; PO accepted
+- Detailed file: scrum/sprint/SPR-2026-28.md

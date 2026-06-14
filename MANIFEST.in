@@ -1,2 +1,2 @@
 include llms.txt
-recursive-include templates *
+recursive-include src/mdbind/templates *

@@ -70,6 +70,7 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-047 | Interactive template selection in mdb init when template is omitted | SPR-2026-26 |
 | B-048 | Verification of minimum template conformity         | SPR-2026-27 |
 | B-049 | Support language selection in mdb init              | SPR-2026-27 |
+| B-050 | Fix local template packaging inside Python package  | SPR-2026-28 |
 
 | ID    | Title                                               | PO Priority | Risk    | Status | Detailed File |
 |-------|-----------------------------------------------------|-------------|---------|--------|---------------|

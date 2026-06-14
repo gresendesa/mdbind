@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mdbind"
-version = "0.1.15"
+version = "0.1.16"
 description = "MdBind — Structured memory in plain Markdown"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -40,6 +40,12 @@ mdb = "mdbind.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.package-data]
+mdbind = ["templates/**/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

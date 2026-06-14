@@ -5,7 +5,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 import yaml
 
-from mdbind.cli import app
+from mdbind.cli import app, locate_templates_dir
 from mdbind.template_packages import (
     pack_template_package,
     init_from_template_package,
@@ -233,7 +233,7 @@ def test_init_fails_path_traversal(temp_workspace: Path, tmp_path: Path):
 
 
 def test_init_real_templates(tmp_path: Path):
-    templates_dir = Path(__file__).parent.parent / "templates"
+    templates_dir = locate_templates_dir()
     for name, expected_file, const_file in [
         ("kanban", "kanban/BOARD.md", "kanban/CONSTITUTION.md"),
         ("product", "product/PITCHES.md", "product/CONSTITUTION.md"),
@@ -330,7 +330,7 @@ def test_cli_init_interactive_selection(tmp_path: Path, monkeypatch: pytest.Monk
 
 
 def test_init_language_en(tmp_path: Path):
-    templates_dir = Path(__file__).parent.parent / "templates"
+    templates_dir = locate_templates_dir()
     template_src = templates_dir / "minimal"
     
     output_zip = tmp_path / "minimal.zip"
@@ -356,7 +356,7 @@ def test_init_language_en(tmp_path: Path):
 
 
 def test_init_language_pt_br(tmp_path: Path):
-    templates_dir = Path(__file__).parent.parent / "templates"
+    templates_dir = locate_templates_dir()
     template_src = templates_dir / "minimal"
     
     output_zip = tmp_path / "minimal.zip"
