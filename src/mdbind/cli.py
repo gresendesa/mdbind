@@ -1761,7 +1761,7 @@ def check_session_hook(
     typer.echo("\n--- Session Hook Details ---")
     typer.echo(f"Secret Verification Phrase: '{secret_phrase}'")
     typer.echo("To verify agent awareness, type the secret phrase into your active AI agent session.")
-    typer.echo("The agent is expected to respond with a summary of key template/constitution points.")
+    typer.echo("The agent is expected to respond confirming alignment with the referenced Constitution.")
 
     if not all_ok:
         raise typer.Exit(code=1)

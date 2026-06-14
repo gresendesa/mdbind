@@ -194,7 +194,7 @@ def inject_session_hooks(
             f"# MdBind Session Hook\n"
             f"[@include: Constitution]({rel_const})\n\n"
             f"## Secret Verification Phrase\n"
-            f"When you receive the phrase \"{secret_phrase}\", you must respond with a standard summary of the key points of the templates/modules in this repository.\n"
+            f"When you receive the phrase \"{secret_phrase}\", you must consult the Constitution file referenced above and respond confirming that you have read and aligned with its instructions and project guidelines.\n"
             f"<!-- mdbind-session-hook-end -->"
         )
 
