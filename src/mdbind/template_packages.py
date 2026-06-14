@@ -893,7 +893,7 @@ def resolve_template_package_path(
         try:
             req = urllib.request.Request(
                 package_path_or_url,
-                headers={"User-Agent": "MdBind-CLI/0.1.13"},
+                headers={"User-Agent": "MdBind-CLI/0.1.14"},
             )
             with urllib.request.urlopen(req, timeout=20) as response:
                 content_bytes = response.read()
