@@ -295,23 +295,19 @@ def test_cli_init_interactive_selection(tmp_path: Path, monkeypatch: pytest.Monk
     target_root = tmp_path / "target_interactive"
     target_root.mkdir()
     
-    # Run init without -t/--template option
-    # Available templates:
-    # 1. default
-    # 2. engineering
-    # 3. kanban
-    # 4. minimal
-    # 5. product
-    # Selecting "3" will be kanban.
+    # Run init without -t/--template option and without context variables
+    # Inputs:
+    # 1. Selection "3" (kanban)
+    # 2. Project name: "Test Interactive"
+    # 3. Owner: "Interactive Owner"
+    # 4. Rules hook placement: "none"
     result = runner.invoke(
         app,
         [
             "init",
             "-r", str(target_root),
-            "--var", "project_name=Test Interactive",
-            "--var", "owner=Interactive Owner",
         ],
-        input="3\nnone\n"
+        input="3\nTest Interactive\nInteractive Owner\nnone\n"
     )
     
     assert result.exit_code == 0

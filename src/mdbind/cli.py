@@ -1598,6 +1598,33 @@ def init(
         if not actual_memory_root:
             actual_memory_root = "scrum"
 
+        # 3b. Add memory_root and template_profile to context as well before prompting
+        context.setdefault("memory_root", actual_memory_root)
+        context.setdefault("template_profile", profile)
+
+        # Prompt user for missing required variables if stdin is a TTY
+        for variable in pkg.variables:
+            if variable.name not in context:
+                if sys.stdin.isatty():
+                    prompt_str = f"{variable.prompt}"
+                    if variable.default is not None:
+                        prompt_str += f" [{variable.default}]"
+                    prompt_str += ": "
+                    user_val = input(prompt_str).strip()
+                    if not user_val and variable.default is not None:
+                        context[variable.name] = variable.default
+                    elif not user_val and variable.required:
+                        typer.echo(f"Error: Variable '{variable.name}' is required.", err=True)
+                        raise typer.Exit(code=1)
+                    else:
+                        context[variable.name] = user_val
+                else:
+                    if variable.default is not None:
+                        context[variable.name] = variable.default
+                    elif variable.required:
+                        typer.echo(f"Error: Variable '{variable.name}' is required but was not provided.", err=True)
+                        raise typer.Exit(code=1)
+
         # 4. Resolve interactive rules placement if needed
         resolved_placement = hook_placement
         if resolved_placement is None:
