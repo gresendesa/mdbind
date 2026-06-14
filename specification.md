@@ -222,6 +222,7 @@ all structural integrity issues without modifying any file.
   * Include cycles (detected via DFS execution path tracking)
   * Sections without required `section:` payload
   * Per-section schema validation for sections that declare `schema` (supporting local JSON/YAML schemas, and remote JSON/YAML web URIs resolved via HTTP).
+  * **Template minimum conformity:** Verifies that a `CONSTITUTION.md` file exists at the root of the workspace and that all Markdown (`.md`) files in the workspace are reachable (directly or indirectly) from `CONSTITUTION.md` via `@ref` or `@include` directives.
 * **Scope:** `--root <path>` performs recursive integrated repository
   validation. `--file <path.md>` validates only the selected file. `--root` and
   `--file` are mutually exclusive.
@@ -287,6 +288,15 @@ Provides a CLI command group to dynamically manage agent session rules hooks in 
   - If a file is left empty after hook removal, it is automatically deleted from the workspace to prevent clutter.
   - Updates the active list of hooks recorded in `.mdb/config.yaml`.
 
+### 8.9. Minimum Template Conformity
+
+To ensure all template workspaces maintain a baseline level of structure and agent-navigable connectivity, workspaces must comply with the following deterministic rules:
+
+1. **`CONSTITUTION.md` Presence:** Every template workspace must contain a `CONSTITUTION.md` file at the root.
+2. **Document Reachability:** All Markdown (`.md`) files in the workspace directory must be reachable from `CONSTITUTION.md` (directly or indirectly) through `@ref` or `@include` directives.
+
+This conformity check is executed programmatically and deterministically by the `mdb validate` command.
+
 ---
 
 ## 9. Semantic Memory Model
@@ -328,13 +338,15 @@ Full graph scan. Collects all structural violations without mutation.
 
 * **Algorithm:** Build a graph from either the recursive root or the selected
   file, run DFS traversal of $G$, set membership checks for duplicate IDs,
-  execution-path tracking for cycle detection, local schema loading, and
-  per-section metadata validation for nodes that declare `schema`.
+  execution-path tracking for cycle detection, local schema loading, per-section
+  metadata validation for nodes that declare `schema`, and minimum template
+  conformity checks (verifying that `CONSTITUTION.md` exists at the root and that
+  all Markdown files are reachable from it).
 * **Complexity:** $O(V + E)$
 * **Output schema:**
 ```json
 {
-  "errors": [{"type": "broken_ref|broken_include|duplicate_id|missing_payload|cycle|schema_validation_error|schema_not_found|schema_invalid|schema_unsupported_uri", "uri": "...", "detail": "...", "schema": "...", "schema_path": "...", "path": "..."}],
+  "errors": [{"type": "broken_ref|broken_include|duplicate_id|missing_payload|cycle|schema_validation_error|schema_not_found|schema_invalid|schema_unsupported_uri|missing_constitution|unreachable_file", "uri": "...", "detail": "...", "schema": "...", "schema_path": "...", "path": "..."}],
   "warnings": [{"type": "...", "uri": "...", "detail": "..."}],
   "summary": {"total_sections": 0, "errors": 0, "warnings": 0}
 }
@@ -561,7 +573,7 @@ All commands support a `--json` flag that produces machine-readable output. The 
 {
   "errors": [
     {
-      "type": "broken_ref | broken_include | duplicate_id | missing_payload | cycle",
+      "type": "broken_ref | broken_include | duplicate_id | missing_payload | cycle | schema_validation_error | schema_not_found | schema_invalid | schema_unsupported_uri | missing_constitution | unreachable_file",
       "uri": "string",
       "detail": "string"
     }

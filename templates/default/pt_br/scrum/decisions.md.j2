@@ -1,0 +1,103 @@
+# Decisions - Memory and Governance
+
+```yaml
+section: decisions
+title: Decision Memory
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+type: governance_memory
+scope: memory_architecture_and_process_governance
+tags: [decisions, governance, memory]
+```
+
+This file records the decision history about the memory architecture and governance process of this workspace.
+
+[@include: Decision record format](decisions.md#decisions.record-format)
+[@ref: Decision memory rule](CONSTITUTION.md#constitution.agent-memory-management.decisions)
+[@ref: Memory policy](CONSTITUTION.md#constitution.memory-policy)
+[@ref: MDBind notation policy](CONSTITUTION.md#constitution.agent-memory-management.mdbind-notation-policy)
+
+## Objective
+
+```yaml
+section: decisions.objective
+title: Decisions Objective
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [objective, decisions]
+```
+
+Maintain an auditable history of governance and memory architecture decisions so future agents can understand the context, choice, and impact of each decision.
+
+## Record Format
+
+```yaml
+section: decisions.record-format
+title: Decision Record Format
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+record_id_format: DEC-XXX
+fields:
+  - id
+  - date
+  - status
+  - context
+  - decision
+  - impact
+  - affected_files
+  - future_review
+allowed_statuses:
+  - proposed
+  - approved
+  - superseded
+  - obsolete
+tags: [format, decisions, records]
+```
+
+Each decision record must use the following structure:
+
+### DEC-XXX - Decision title
+
+```yaml
+section: decisions.DEC-XXX
+id: DEC-XXX
+title: Decision title
+date:
+status: proposed
+context:
+decision:
+impact:
+affected_files: []
+future_review:
+owner: "{{ owner }}"
+created_at:
+updated_at:
+```
+
+Decision narrative goes here.
+
+[@ref: Related experience](experience.md#experience.EXP-XXX)
+[@ref: Related constitution rule](CONSTITUTION.md#constitution.memory-policy)
+
+[@ref: History rule](CONSTITUTION.md#constitution.agent-memory-management.history)
+
+## History
+
+```yaml
+section: decisions.history
+title: Decision History
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+decisions: []
+tags: [decisions, history]
+```
+
+No decisions registered yet.

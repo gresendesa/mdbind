@@ -99,6 +99,19 @@ Some description.
 """
     backlog_file.write_text(backlog_content, encoding="utf-8")
 
+    # Create CONSTITUTION.md to pass template conformity checks
+    constitution_file = temp_git_repo / "CONSTITUTION.md"
+    constitution_content = """# Constitution
+
+## Rules
+```yaml
+section: constitution
+status: active
+```
+[@ref: backlog](backlog.md#backlog.item.B-001)
+"""
+    constitution_file.write_text(constitution_content, encoding="utf-8")
+
     # Commit initial state
     subprocess.run(["git", "add", "."], cwd=str(temp_git_repo), check=True)
     subprocess.run(["git", "commit", "-m", "initial commit"], cwd=str(temp_git_repo), check=True)

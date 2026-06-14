@@ -1,0 +1,95 @@
+# Constituição - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constituição
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, product, shape-up, mdbind]
+```
+
+Este documento define a constituição operacional para o espaço de trabalho orientado a produto (Shape Up).
+
+## Objetivo
+
+```yaml
+section: constitution.purpose
+title: Objetivo
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+Estruturar o desenvolvimento do produto em torno de pitches desenhados, ciclos de tempo fixo e appetites, garantindo que construamos apenas ideias bem-definidas.
+
+## Regras Não Negociáveis
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Regras Não Negociáveis
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Não construímos trabalho não desenhado (unshaped). Cada projeto de ciclo deve se referir a um pitch.
+* Os prazos do ciclo são de tempo fixo; o escopo é variável. Se um projeto não for concluído dentro do ciclo, ele é descartado por padrão (disjuntor/circuit breaker).
+* Os registros de decisões de produto e as especificações do ciclo devem ser atualizados na memória sob `product/`.
+* Alterações nesta constituição só podem ser aprovadas pelo proprietário.
+
+## Gerenciamento de Ciclos
+
+```yaml
+section: constitution.cycle-management
+title: Gerenciamento de Ciclos
+status: active
+owner: "{{ owner }}"
+cycle_duration_weeks: 6
+cool_down_weeks: 2
+tags: [cycle, shape-up]
+```
+
+* **Desenho (Shaping)**: Projetar o trabalho no nível certo de abstração (nem muito alto, nem muito detalhado).
+* **Aposta (Betting)**: Escolher quais pitches financiar para o próximo ciclo.
+* **Construção (Building)**: Ciclos fixos de 6 semanas de desenvolvimento ininterrupto, seguidos por um período de 2 semanas de cool-down.
+
+## Definição de Concluído (DoD)
+
+```yaml
+section: constitution.definition-of-done
+title: Definição de Concluído
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - pitch_approved_at_betting_table
+  - scope_mapped
+  - functional_demo_approved
+  - decision_history_updated
+  - test_suite_passing
+tags: [dod, quality, validation]
+```
+
+Para marcar um projeto de ciclo de produto como `done`, o seguinte deve ser atendido:
+
+1. Pitch aceito na mesa de aposta (betting table).
+2. Escopos principais mapeados e concluídos.
+3. Demonstração funcional aprovada pelo Product Owner.
+4. Principais decisões documentadas em `product/decisions.md`.
+5. Suíte de testes existente aprovada com zero falhas.
+
+## Estrutura de Memória e Rotas
+
+```yaml
+section: constitution.routing
+title: Estrutura de Memória e Rotas
+status: active
+owner: "{{ owner }}"
+tags: [routing, structure, memory]
+```
+
+O espaço de trabalho utiliza os seguintes arquivos de memória principais:
+* **Log de Pitches**: [@ref: pitches](PITCHES.md#product-pitches) contém todas as propostas de projetos desenhados.
+* **Decisões de Produto**: [@ref: decisions](decisions.md#product-decisions) registra todas as decisões de arquitetura e escopo de produto.

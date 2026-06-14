@@ -68,10 +68,11 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-045 | Implement Kanban, Shape Up, ADR, and Minimal template packages | SPR-2026-25 |
 | B-046 | Aperfeiçoar o CONSTITUTION.md de cada template com includes e refs | SPR-2026-26 |
 | B-047 | Interactive template selection in mdb init when template is omitted | SPR-2026-26 |
+| B-048 | Verification of minimum template conformity         | SPR-2026-27 |
+| B-049 | Support language selection in mdb init              | SPR-2026-27 |
 
-### Pending
-
-*No pending items.*
+| ID    | Title                                               | PO Priority | Risk    | Status | Detailed File |
+|-------|-----------------------------------------------------|-------------|---------|--------|---------------|
 
 ### Obsolete
 

@@ -1,0 +1,97 @@
+# Constituição - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constituição
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, engineering, adr, rfc, mdbind]
+```
+
+Este documento define a constituição operacional para o espaço de trabalho focado em Engenharia/ADR.
+
+## Objetivo
+
+```yaml
+section: constitution.purpose
+title: Objetivo
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+Direcionar decisões arquiteturais e de design por meio de RFCs (Request for Comments) colaborativos e registrá-los como ADRs (Architecture Decision Records) imutáveis.
+
+## Regras Não Negociáveis
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Regras Não Negociáveis
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Mudanças arquiteturais significativas devem passar por um processo de RFC.
+* Uma vez aprovadas, as decisões devem ser documentadas como ADRs numerados.
+* O roadmap e o índice de ADRs devem permanecer precisos e atualizados.
+* Alterações nesta constituição só podem ser aprovadas pelo proprietário/arquiteto líder.
+
+## Fluxo de Decisão Arquitetural
+
+```yaml
+section: constitution.adr-workflow
+title: Fluxo de Decisão Arquitetural
+status: active
+owner: "{{ owner }}"
+workflow_states:
+  - proposed
+  - accepted
+  - superseded
+  - rejected
+tags: [adr, workflow]
+```
+
+1. **RFC Proposta**: Escreva uma proposta sob `rfcs/`.
+2. **Revisão e Discussão**: Busque feedback e consenso.
+3. **ADR Registrado**: Crie um ADR sob `adr/` detalhando o Contexto, Decisão e Consequências. Marque o status como `accepted`, `superseded` ou `rejected`.
+4. **Roadmap Alinhado**: Garanta que os impactos nos marcos sejam atualizados em `ROADMAP.md`.
+
+## Definição de Concluído (DoD)
+
+```yaml
+section: constitution.definition-of-done
+title: Definição de Concluído
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - rfc_reviewed_and_resolved
+  - adr_written_and_numbered
+  - index_updated
+  - test_verification_successful
+tags: [dod, quality, validation]
+```
+
+Para concluir uma mudança arquitetural, o seguinte deve ser atendido:
+
+1. RFC revisado e resolvido com sucesso.
+2. ADR numerado formalmente adicionado sob `adr/`.
+3. Índice de ADRs no `ADR.md` atualizado.
+4. Testes de validação executados e aprovados.
+
+## Estrutura de Memória e Rotas
+
+```yaml
+section: constitution.routing
+title: Estrutura de Memória e Rotas
+status: active
+owner: "{{ owner }}"
+tags: [routing, structure, memory]
+```
+
+O espaço de trabalho utiliza os seguintes arquivos de memória principais:
+* **Arquivos de Decisão Arquitetural (ADRs)**: [@ref: adr](ADR.md#adr-index) indexa todos os registros individuais.
+* **Roadmap de Engenharia**: [@ref: roadmap](ROADMAP.md#engineering-roadmap) detalha marcos de alto nível e status ativo.

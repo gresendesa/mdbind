@@ -300,14 +300,15 @@ def test_cli_init_interactive_selection(tmp_path: Path, monkeypatch: pytest.Monk
     # 1. Selection "3" (kanban)
     # 2. Project name: "Test Interactive"
     # 3. Owner: "Interactive Owner"
-    # 4. Rules hook placement: "none"
+    # 4. Language selection: "en" (or empty)
+    # 5. Rules hook placement: "none"
     result = runner.invoke(
         app,
         [
             "init",
             "-r", str(target_root),
         ],
-        input="3\nTest Interactive\nInteractive Owner\nnone\n"
+        input="3\nTest Interactive\nInteractive Owner\n\nnone\n"
     )
     
     assert result.exit_code == 0
@@ -326,4 +327,57 @@ def test_cli_init_interactive_selection(tmp_path: Path, monkeypatch: pytest.Monk
     # Confirm it contains the routing sections
     assert "Kanban Board" in const_content
     assert "BOARD.md#kanban-board" in const_content
+
+
+def test_init_language_en(tmp_path: Path):
+    templates_dir = Path(__file__).parent.parent / "templates"
+    template_src = templates_dir / "minimal"
+    
+    output_zip = tmp_path / "minimal.zip"
+    pack_template_package(template_src, output_zip)
+    
+    target_root = tmp_path / "target_en"
+    target_root.mkdir()
+    
+    context = {"project_name": "EN Minimal", "owner": "Owner"}
+    result = init_from_template_package(
+        output_zip,
+        target_root,
+        context,
+        hook_placement="none",
+        lang="en"
+    )
+    
+    const_file = target_root / "minimal" / "CONSTITUTION.md"
+    assert const_file.exists()
+    content = const_file.read_text(encoding="utf-8")
+    assert "Constitution - EN Minimal" in content
+    assert "Workspace Readme" in content
+
+
+def test_init_language_pt_br(tmp_path: Path):
+    templates_dir = Path(__file__).parent.parent / "templates"
+    template_src = templates_dir / "minimal"
+    
+    output_zip = tmp_path / "minimal.zip"
+    pack_template_package(template_src, output_zip)
+    
+    target_root = tmp_path / "target_pt"
+    target_root.mkdir()
+    
+    context = {"project_name": "PT Minimal", "owner": "Owner"}
+    result = init_from_template_package(
+        output_zip,
+        target_root,
+        context,
+        hook_placement="none",
+        lang="pt_br"
+    )
+    
+    const_file = target_root / "minimal" / "CONSTITUTION.md"
+    assert const_file.exists()
+    content = const_file.read_text(encoding="utf-8")
+    assert "Constituição - PT Minimal" in content
+    assert "Objetivo" in content
+
 

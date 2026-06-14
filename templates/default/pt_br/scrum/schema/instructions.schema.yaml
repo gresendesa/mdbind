@@ -1,0 +1,22 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+required:
+  - id
+  - title
+  - status
+  - template
+properties:
+  id:
+    const: template.smd-default.instructions
+  schema:
+    type: string
+  title:
+    type: string
+  status:
+    const: active
+  template:
+    const: smd-default
+  tags:
+    type: array
+    items:
+      type: string

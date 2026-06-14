@@ -266,6 +266,7 @@ def init_from_template_package(
     template_profile: str = "standard",
     hook_placement: str = "bottom",
     secret_phrase: Optional[str] = None,
+    lang: str = "en",
 ) -> TemplatePackageInitResult:
     """Initialize project memory from a checksum-signed local template package."""
     package_path = package_path.resolve()
@@ -298,7 +299,8 @@ def init_from_template_package(
         full_context = dict(context)
         full_context.setdefault("memory_root", actual_memory_root)
         full_context.setdefault("template_profile", template_profile)
-        rendered = _render_package_files(extracted, package, full_context)
+        full_context.setdefault("lang", lang)
+        rendered = _render_package_files(extracted, package, full_context, lang=lang)
         _prevent_unapproved_overwrites(target_root, rendered, force=force)
         write_rendered_files(target_root, rendered)
 
@@ -442,13 +444,27 @@ def _validate_manifest_paths(
                 if not isinstance(path, str):
                     raise TemplatePackagePackError(f"manifest.yaml field '{field}' entries require '{key}'.")
                 _assert_safe_relative(path, f"Manifest {field}.{key}")
-                if key != "target" and not (root / path).exists():
-                    raise TemplatePackagePackError(f"Manifest path '{path}' does not exist.")
+                if key != "target":
+                    found = False
+                    for prefix in ("en", "pt_br", ""):
+                        candidate = root / prefix / path if prefix else root / path
+                        if candidate.exists():
+                            found = True
+                            break
+                    if not found:
+                        raise TemplatePackagePackError(f"Manifest path '{path}' does not exist.")
         else:
             if not isinstance(item, str):
                 raise TemplatePackagePackError(f"manifest.yaml field '{field}' entries must be strings.")
             _assert_safe_relative(item, f"Manifest {field}")
-            if not (root / item).exists():
+            
+            found = False
+            for prefix in ("en", "pt_br", ""):
+                candidate = root / prefix / item if prefix else root / item
+                if candidate.exists():
+                    found = True
+                    break
+            if not found:
                 raise TemplatePackagePackError(f"Manifest path '{item}' does not exist.")
 
 
@@ -549,7 +565,14 @@ def _read_manifest(root: Path) -> TemplatePackage:
             raise TemplatePackageError("Template file mappings require template and target.")
         _assert_safe_relative(template, "Template path")
         _assert_safe_relative(target, "Target path")
-        if not (root / template).exists():
+        
+        found = False
+        for prefix in ("en", "pt_br", ""):
+            candidate = root / prefix / template if prefix else root / template
+            if candidate.exists():
+                found = True
+                break
+        if not found:
             raise TemplatePackageError(f"Template file '{template}' does not exist in the package.")
         files.append(TemplatePackageFile(template=template, target=Path(target)))
 
@@ -560,7 +583,14 @@ def _read_manifest(root: Path) -> TemplatePackage:
         if not isinstance(instruction, str):
             raise TemplatePackageError("Instruction file paths must be strings.")
         _assert_safe_relative(instruction, "Instruction path")
-        if not (root / instruction).exists():
+        
+        found = False
+        for prefix in ("en", "pt_br", ""):
+            candidate = root / prefix / instruction if prefix else root / instruction
+            if candidate.exists():
+                found = True
+                break
+        if not found:
             raise TemplatePackageError(f"Instruction file '{instruction}' does not exist in the package.")
 
     version = data.get("version")
@@ -620,7 +650,12 @@ def _read_manifest_variables(data: dict[str, Any]) -> list[TemplatePackageVariab
     return variables
 
 
-def _render_package_files(root: Path, package: TemplatePackage, context: dict[str, Any]) -> list[RenderedFile]:
+def _render_package_files(
+    root: Path,
+    package: TemplatePackage,
+    context: dict[str, Any],
+    lang: str = "en",
+) -> list[RenderedFile]:
     from datetime import date
     
     today = date.today().isoformat()
@@ -649,10 +684,15 @@ def _render_package_files(root: Path, package: TemplatePackage, context: dict[st
     )
     rendered: list[RenderedFile] = []
     for file in package.files:
+        # Resolve target template file, taking lang subdirectories into account
+        template_src = f"{lang}/{file.template}"
+        if not (root / template_src).exists():
+            template_src = file.template
+
         try:
-            content = environment.get_template(file.template).render(**full_context)
+            content = environment.get_template(template_src).render(**full_context)
         except TemplateError as exc:
-            raise TemplateRenderError(f"failed to render template '{file.template}': {exc}") from exc
+            raise TemplateRenderError(f"failed to render template '{template_src}': {exc}") from exc
         rendered.append(RenderedFile(file.target, content))
     return rendered
 
@@ -912,7 +952,7 @@ def resolve_template_package_path(
         try:
             req = urllib.request.Request(
                 package_path_or_url,
-                headers={"User-Agent": "MdBind-CLI/0.1.14"},
+                headers={"User-Agent": "MdBind-CLI/0.1.15"},
             )
             with urllib.request.urlopen(req, timeout=20) as response:
                 content_bytes = response.read()

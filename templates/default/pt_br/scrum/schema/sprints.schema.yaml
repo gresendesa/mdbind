@@ -1,0 +1,33 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+required:
+  - id
+  - title
+  - status
+  - owner
+  - created_at
+  - updated_at
+  - type
+  - scope
+  - detail_directory
+properties:
+  id:
+    const: sprints
+  schema:
+    type: string
+  title:
+    type: string
+  status:
+    const: active
+  owner:
+    type: string
+  type:
+    const: consolidator
+  scope:
+    const: sprints
+  detail_directory:
+    type: string
+  tags:
+    type: array
+    items:
+      type: string

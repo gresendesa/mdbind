@@ -1,0 +1,99 @@
+# Constituição - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constituição
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, kanban, mdbind]
+```
+
+Este documento define a constituição operacional para o espaço de trabalho baseado em Kanban.
+
+## Objetivo
+
+```yaml
+section: constitution.purpose
+title: Objetivo
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+Estabelecer um processo de desenvolvimento visual, contínuo e baseado em fluxo, usando um quadro Kanban como a única fonte de verdade para os itens de trabalho.
+
+## Regras Não Negociáveis
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Regras Não Negociáveis
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Os itens de trabalho devem ter proprietários claros e progredir de forma transparente através dos estados.
+* Os limites de Trabalho em Progresso (WIP) devem ser respeitados e os itens bloqueados devem ser resolvidos antes de iniciar novas tarefas.
+* Os arquivos de memória operacional sob `kanban/` devem ser atualizados continuamente.
+* Alterações nesta constituição só podem ser aprovadas pelo proprietário.
+
+## Fluxo Kanban e Limites WIP
+
+```yaml
+section: constitution.flow
+title: Fluxo Kanban e Limites WIP
+status: active
+owner: "{{ owner }}"
+wip_limits:
+  doing: 3
+  blocked: 2
+tags: [flow, kanban]
+```
+
+* **Backlog**: Contém solicitações pendentes, priorizadas pelo PO.
+* **Todo**: Selecionado para ação imediata.
+* **Doing**: Atualmente em andamento. **Limite WIP: 3**.
+* **Blocked**: Paralisado devido a dependências externas. **Limite WIP: 2**.
+* **Done**: Totalmente validado e concluído.
+
+## Definição de Concluído (DoD)
+
+```yaml
+section: constitution.definition-of-done
+title: Definição de Concluído
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - manual_test_documented
+  - board_updated
+  - decisions_logged
+  - regression_checklist_executed
+  - automated_tests_successful
+tags: [dod, quality, validation]
+```
+
+Para marcar qualquer item como `done`, o seguinte deve ser atendido:
+
+1. Validação manual ou teste documentado.
+2. O arquivo `BOARD.md` atualizado com o status correto.
+3. Decisões arquiteturais ou de processo relevantes registradas em `decisions.md`.
+4. Checklist de regressão executado e verificado.
+5. Todos os testes automatizados de unidade/integração aprovados.
+
+## Estrutura de Memória e Rotas
+
+```yaml
+section: constitution.routing
+title: Estrutura de Memória e Rotas
+status: active
+owner: "{{ owner }}"
+tags: [routing, structure, memory]
+```
+
+O espaço de trabalho utiliza os seguintes arquivos de memória principais:
+* **Quadro Kanban**: [@ref: board](BOARD.md#kanban-board) acompanha todas as tarefas e seus estados ativos.
+* **Decisões de Processo**: [@ref: decisions](decisions.md#kanban-decisions) acompanha escolhas históricas de arquitetura/processo.
+* **Lições Aprendidas**: [@ref: lessons](lessons.md#kanban-lessons) captura retrospectivas do projeto e experiência.

@@ -8,8 +8,8 @@ Transform your Markdown files into a navigable knowledge graph —
 without databases, embeddings, or proprietary formats.
 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/tests-263%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
-[![Version](https://img.shields.io/badge/version-0.1.14-informational)](#installation)
+[![Tests](https://img.shields.io/badge/tests-274%20passing-brightgreen?logo=pytest&logoColor=white)](#development)
+[![Version](https://img.shields.io/badge/version-0.1.15-informational)](#installation)
 [![License](https://img.shields.io/badge/License-Apache_2.0-lightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![PyPI](https://img.shields.io/pypi/v/mdbind?logo=pypi&logoColor=white&color=orange)](https://pypi.org/project/mdbind/)
 
@@ -187,7 +187,7 @@ auth
 | `mdb get <URI>` | Extract a section with full documentary fidelity |
 | `mdb tree <URI>` | Visual dependency hierarchy |
 | `mdb compose <URI>` | Materialize a unified document (expands `@include`) |
-| `mdb validate` | Check integrity: broken refs, cycles, duplicate IDs, local section schemas |
+| `mdb validate` | Check integrity: broken refs, cycles, duplicate IDs, local section schemas, and template minimum conformity |
 | `mdb context <URI>` | Metadata + immediate 1-hop neighborhood |
 | `mdb metadata get/update/unset <URI>` | Read or edit structured YAML metadata |
 | `mdb backlinks <URI>` | All sections that reference this URI |
@@ -211,6 +211,9 @@ All outputs are deterministic and JSON-serializable. All URIs are stable across 
 ```bash
 # Validate an entire repository
 mdb validate --root docs/ --json
+
+# Validate template minimum conformity (checks for CONSTITUTION.md and reachability of all .md files)
+mdb validate --root my_template_workspace/
 
 # Validate one Markdown file in isolation
 mdb validate --file docs/auth.md --json

@@ -24,6 +24,8 @@ class TestValidateClean:
             "# Section A\n\n```yaml\nsection: a\n```\n\nContent.\n",
             encoding="utf-8",
         )
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](doc.md#a)\n", encoding="utf-8")
         result = runner.invoke(app, ["validate", "--root", str(tmp_path)])
         assert result.exit_code == 0
         assert "no issues found" in result.output.lower() or "OK" in result.output
@@ -34,16 +36,20 @@ class TestValidateClean:
             "# Section A\n\n```yaml\nsection: a\n```\n\nContent.\n",
             encoding="utf-8",
         )
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](doc.md#a)\n", encoding="utf-8")
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
         assert result.exit_code == 0
         data = json.loads(result.output)
         assert data["summary"]["errors"] == 0
         assert data["summary"]["warnings"] == 0
-        assert data["summary"]["total_sections"] == 1
+        assert data["summary"]["total_sections"] == 2
 
     def test_validate_json_schema_keys(self, tmp_path):
         md = tmp_path / "doc.md"
         md.write_text("# S\n\n```yaml\nsection: s\n```\n", encoding="utf-8")
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: s](doc.md#s)\n", encoding="utf-8")
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
         data = json.loads(result.output)
         assert "errors" in data
@@ -174,6 +180,8 @@ class TestValidateSchema:
     def test_section_without_schema_keeps_current_validation_behavior(self, tmp_path):
         md = tmp_path / "doc.md"
         md.write_text("# Section A\n\n```yaml\nsection: a\nstatus: freeform\n```\n", encoding="utf-8")
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](doc.md#a)\n", encoding="utf-8")
 
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
 
@@ -193,6 +201,8 @@ class TestValidateSchema:
             "```\n",
             encoding="utf-8",
         )
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](doc.md#a)\n", encoding="utf-8")
 
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
 
@@ -212,6 +222,8 @@ class TestValidateSchema:
             "```\n",
             encoding="utf-8",
         )
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](doc.md#a)\n", encoding="utf-8")
 
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
 
@@ -251,6 +263,8 @@ class TestValidateSchema:
             "```\n",
             encoding="utf-8",
         )
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](doc.md#a)\n", encoding="utf-8")
 
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
 
@@ -285,6 +299,8 @@ class TestValidateSchema:
             "```\n",
             encoding="utf-8",
         )
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: a](docs/doc.md#a)\n", encoding="utf-8")
 
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
 
@@ -477,3 +493,46 @@ class TestValidateFile:
         assert error["type"] == "schema_validation_error"
         assert error["path"] == "status"
         assert error["schema_path"].endswith("schema/section.schema.json")
+
+
+class TestValidateTemplateConformity:
+    def test_missing_constitution_reported(self, tmp_path):
+        md = tmp_path / "doc.md"
+        md.write_text("# S\n\n```yaml\nsection: s\n```\n", encoding="utf-8")
+        result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
+        assert result.exit_code == 1
+        data = json.loads(result.output)
+        types = [e["type"] for e in data["errors"]]
+        assert "missing_constitution" in types
+
+    def test_unreachable_file_reported(self, tmp_path):
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text("# Constitution\n\n```yaml\nsection: constitution\n```\n", encoding="utf-8")
+        
+        orphan = tmp_path / "orphan.md"
+        orphan.write_text("# Orphan\n\n```yaml\nsection: orphan\n```\n", encoding="utf-8")
+
+        result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
+        assert result.exit_code == 1
+        data = json.loads(result.output)
+        types = [e["type"] for e in data["errors"]]
+        assert "unreachable_file" in types
+        # Check specific uri reported
+        uris = [e["uri"] for e in data["errors"] if e["type"] == "unreachable_file"]
+        assert "orphan.md" in uris
+
+    def test_reachable_file_passes(self, tmp_path):
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text(
+            "# Constitution\n\n```yaml\nsection: constitution\n```\n\n[@ref: linked](linked.md#linked)\n",
+            encoding="utf-8"
+        )
+        
+        linked = tmp_path / "linked.md"
+        linked.write_text("# Linked\n\n```yaml\nsection: linked\n```\n", encoding="utf-8")
+
+        result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+        assert data["summary"]["errors"] == 0
+

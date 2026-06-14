@@ -79,6 +79,16 @@ class TestWebSchemas:
             encoding="utf-8",
         )
 
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text(
+            "# Constitution\n\n"
+            "```yaml\n"
+            "section: constitution\n"
+            "```\n\n"
+            "[@ref: a](doc.md#a)\n",
+            encoding="utf-8",
+        )
+
         result = runner.invoke(app, ["validate", "--root", str(tmp_path), "--json"])
         assert result.exit_code == 0
         data = json.loads(result.output)
@@ -110,6 +120,16 @@ class TestWebSchemas:
             "schema: https://example.com/invalid.schema.json\n"
             "status: done\n"
             "```\n",
+            encoding="utf-8",
+        )
+
+        const = tmp_path / "CONSTITUTION.md"
+        const.write_text(
+            "# Constitution\n\n"
+            "```yaml\n"
+            "section: constitution\n"
+            "```\n\n"
+            "[@ref: a](doc.md#a)\n",
             encoding="utf-8",
         )
 

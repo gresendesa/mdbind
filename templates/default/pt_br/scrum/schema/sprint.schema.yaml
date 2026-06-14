@@ -1,0 +1,38 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+required:
+  - id
+  - sprint_id
+  - title
+  - status
+  - focus
+  - sprint_risk
+  - owner
+  - created_at
+  - updated_at
+  - backlog_items
+properties:
+  id:
+    type: string
+  schema:
+    type: string
+  sprint_id:
+    type: string
+  title:
+    type: string
+  status:
+    enum: [planned, doing, blocked, review, done, cancelled, obsolete]
+  focus:
+    type: string
+  sprint_risk:
+    enum: [low, medium, high]
+  owner:
+    type: string
+  backlog_items:
+    type: array
+    items:
+      type: string
+  tags:
+    type: array
+    items:
+      type: string

@@ -1,0 +1,93 @@
+# Constituição - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constituição
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, minimal, mdbind]
+```
+
+Este documento define a constituição operacional para a memória do projeto no estilo Minimal.
+
+## Objetivo
+
+```yaml
+section: constitution.purpose
+title: Objetivo
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+Fornecer uma estrutura leve e sem burocracia com listas simples e um histórico de alterações (changelog) para acompanhar os objetivos.
+
+## Regras Não Negociáveis
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Regras Não Negociáveis
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Manter um único arquivo `todo.md` para tarefas ativas.
+* Registrar atualizações visíveis ao usuário no arquivo `CHANGELOG.md`.
+* Alterações nesta constituição exigem aprovação do proprietário (owner).
+
+## Escala de Status das Tarefas
+
+```yaml
+section: constitution.task-statuses
+title: Escala de Status das Tarefas
+status: active
+owner: "{{ owner }}"
+statuses:
+  - open
+  - in-progress
+  - completed
+tags: [status, tasks]
+```
+
+* **Open**: Pendente de ação.
+* **In Progress**: Trabalho ativo.
+* **Completed**: Verificado e registrado.
+
+## Definição de Concluído (DoD)
+
+```yaml
+section: constitution.definition-of-done
+title: Definição de Concluído
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - task_completed_in_todo
+  - changelog_updated
+  - test_verification_successful
+tags: [dod, quality, validation]
+```
+
+Para marcar uma tarefa como concluída:
+
+1. Marcar o status como concluído em `todo.md`.
+2. Registrar as mudanças no `CHANGELOG.md`.
+3. Verificar se todos os testes passaram com sucesso.
+
+## Estrutura da Memória e Rotas
+
+```yaml
+section: constitution.routing
+title: Estrutura da Memória e Rotas
+status: active
+owner: "{{ owner }}"
+tags: [routing, structure, memory]
+```
+
+O espaço de trabalho utiliza os seguintes arquivos principais de memória:
+* **Readme**: [@ref: readme](README.md#minimal-readme) apresenta o espaço de trabalho e seu contexto.
+* **Lista de Tarefas**: [@ref: todo](todo.md#minimal-todo) contém o controle e status das tarefas.
+* **Histórico de Alterações**: [@ref: changelog](CHANGELOG.md#minimal-changelog) acompanha as atualizações cronológicas.

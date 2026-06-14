@@ -1,0 +1,40 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+required:
+  - id
+  - title
+  - status
+  - type
+  - po_priority
+  - risk
+  - linked_sprint
+  - owner
+  - created_at
+  - updated_at
+properties:
+  id:
+    type: string
+  schema:
+    type: string
+  title:
+    type: string
+  status:
+    enum: [todo, refined, planned, doing, blocked, review, done, obsolete]
+  type:
+    type: string
+  po_priority:
+    type:
+      - integer
+      - "null"
+  risk:
+    enum: [low, medium, high]
+  linked_sprint:
+    type:
+      - string
+      - "null"
+  owner:
+    type: string
+  tags:
+    type: array
+    items:
+      type: string

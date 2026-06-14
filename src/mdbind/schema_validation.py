@@ -95,7 +95,7 @@ def _load_web_schema(schema_ref: str, repo_root: Path | None, no_cache: bool) ->
     try:
         req = urllib.request.Request(
             schema_ref,
-            headers={"User-Agent": "MdBind-CLI/0.1.14"},
+            headers={"User-Agent": "MdBind-CLI/0.1.15"},
         )
         with urllib.request.urlopen(req, timeout=5) as response:
             content_bytes = response.read()

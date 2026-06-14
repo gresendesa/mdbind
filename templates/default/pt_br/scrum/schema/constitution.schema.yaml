@@ -1,0 +1,26 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+type: object
+required:
+  - id
+  - title
+  - status
+  - owner
+  - created_at
+  - updated_at
+properties:
+  id:
+    const: constitution
+  schema:
+    type: string
+  title:
+    type: string
+  project_name:
+    type: string
+  status:
+    const: active
+  owner:
+    type: string
+  tags:
+    type: array
+    items:
+      type: string

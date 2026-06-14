@@ -143,6 +143,95 @@ def _validation_report(
     if repo_root:
         errors.extend(validate_workflows(graph, repo_root, commit_ref=commit_ref))
 
+    # 5. Minimum template conformity checks (B-048)
+    if isolated_file is None and repo_root is not None:
+        import os
+        # Find memory_root from config if present
+        memory_root = None
+        config_path = repo_root / ".mdb" / "config.yaml"
+        if config_path.exists():
+            try:
+                import yaml
+                config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+                memory_root = config.get("memory_root")
+            except Exception:
+                pass
+
+        # Resolve CONSTITUTION.md path
+        constitution_path = None
+        if memory_root:
+            candidate = repo_root / memory_root / "CONSTITUTION.md"
+            if candidate.exists():
+                constitution_path = candidate
+        
+        if not constitution_path:
+            candidate = repo_root / "CONSTITUTION.md"
+            if candidate.exists():
+                constitution_path = candidate
+
+        if not constitution_path:
+            # Check other possible subfolders
+            for sub in ("scrum", "docs", "memory", "kanban", "product", "engineering", "minimal"):
+                candidate = repo_root / sub / "CONSTITUTION.md"
+                if candidate.exists():
+                    constitution_path = candidate
+                    break
+
+        if not constitution_path:
+            errors.append({
+                "type": "missing_constitution",
+                "uri": "",
+                "detail": "CONSTITUTION.md not found in the workspace root or memory root",
+            })
+        else:
+            # Determine the search directory for all expected .md files
+            search_dir = repo_root / memory_root if (memory_root and (repo_root / memory_root).is_dir()) else repo_root
+            
+            # Find all target markdown files in the workspace (excluding ignored directories)
+            expected_files = set()
+            for path in search_dir.rglob("*.md"):
+                # Ignore paths containing hidden directories or other ignored names
+                try:
+                    rel_parts = path.relative_to(repo_root).parts
+                except ValueError:
+                    continue
+                if any(p.startswith(".") or p in ("node_modules", "__pycache__", "venv", "tests") for p in rel_parts):
+                    continue
+                expected_files.add(path.resolve())
+
+            # Reachability traversal using file-level search
+            reachable_files = {constitution_path.resolve()}
+            queue = [constitution_path.resolve()]
+            
+            while queue:
+                curr_file = queue.pop(0)
+                # Find all sections in this file
+                sections_in_file = [
+                    sec for sec in graph.index.sections.values()
+                    if Path(sec.file_path).resolve() == curr_file
+                ]
+                for sec in sections_in_file:
+                    for directive in sec.directives:
+                        if directive.type in ("ref", "include"):
+                            # Resolve target file path
+                            tgt_path_str = directive.target_uri.split("#", 1)[0]
+                            if tgt_path_str:
+                                tgt_file = Path(tgt_path_str).resolve()
+                                if tgt_file.exists() and tgt_file not in reachable_files:
+                                    reachable_files.add(tgt_file)
+                                    queue.append(tgt_file)
+
+            # Any expected file not in reachable_files is an error
+            for f in sorted(expected_files):
+                if f.resolve() not in reachable_files:
+                    # Relativize for cleaner reporting
+                    rel_uri = os.path.relpath(f, repo_root) if repo_root else str(f)
+                    errors.append({
+                        "type": "unreachable_file",
+                        "uri": rel_uri,
+                        "detail": f"File '{rel_uri}' is not reachable from CONSTITUTION.md",
+                    })
+
     summary = {
         "total_sections": len(all_uris),
         "total_edges": total_edges,
@@ -1490,6 +1579,7 @@ def init(
     no_cache: bool = typer.Option(False, "--no-cache", help="Disable download caching for web-based templates."),
     hook_placement: Optional[str] = typer.Option(None, "--hook-placement", help="Placement of the rules hook inside entrypoint files (top, bottom, or none)."),
     hook_secret: Optional[str] = typer.Option(None, "--hook-secret", help="Override the generated 5-word secret phrase."),
+    lang: Optional[str] = typer.Option(None, "--lang", help="Language for the templates ('en' or 'pt_br')."),
 ) -> None:
     """
     Initializes a new directory using a signed template zip package.
@@ -1625,6 +1715,30 @@ def init(
                         typer.echo(f"Error: Variable '{variable.name}' is required but was not provided.", err=True)
                         raise typer.Exit(code=1)
 
+        # 3c. Resolve language choice (B-049)
+        resolved_lang = lang
+        if resolved_lang:
+            resolved_lang = resolved_lang.lower()
+            if resolved_lang not in ("en", "pt_br"):
+                typer.echo("Error: Invalid language choice. Supported languages are 'en', 'pt_br'.", err=True)
+                raise typer.Exit(code=1)
+        else:
+            if sys.stdin.isatty():
+                while True:
+                    lang_choice = input("Select documentation language [en / pt_br] (default: en): ").strip().lower()
+                    if not lang_choice:
+                        resolved_lang = "en"
+                        break
+                    if lang_choice in ("en", "pt_br"):
+                        resolved_lang = lang_choice
+                        break
+                    typer.echo("Invalid option. Please enter 'en' or 'pt_br'.", err=True)
+            else:
+                resolved_lang = "en"
+
+        context["lang"] = resolved_lang
+        context["language"] = resolved_lang
+
         # 4. Resolve interactive rules placement if needed
         resolved_placement = hook_placement
         if resolved_placement is None:
@@ -1654,6 +1768,7 @@ def init(
                 template_profile=profile,
                 hook_placement=resolved_placement,
                 secret_phrase=hook_secret,
+                lang=resolved_lang,
             )
             typer.echo(f"Successfully initialized workspace template '{result.package['name']}' ({result.package['version']}).")
             if result.hooked_files:
