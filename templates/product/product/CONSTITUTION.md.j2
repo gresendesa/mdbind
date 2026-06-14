@@ -1,0 +1,81 @@
+# Constitution - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constitution
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, product, shape-up, mdbind]
+```
+
+This document defines the operating constitution for the Product-driven (Shape Up) workspace.
+
+## Purpose
+
+```yaml
+section: constitution.purpose
+title: Purpose
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+To structure product development around shaped pitches, fixed-time cycles, and appetites, ensuring we only build well-defined ideas.
+
+## Non-Negotiable Rules
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Non-Negotiable Rules
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* We do not build unshaped work. Every cycle project must refer to a pitch.
+* Cycle deadlines are fixed-time; scope is variable. If a project isn't finished within the cycle, it is dropped by default (circuit breaker).
+* Product decision logs and cycle specifications must be updated in `product/` memory.
+* Changes to this constitution can only be approved by the owner.
+
+## Cycle Management
+
+```yaml
+section: constitution.cycle-management
+title: Cycle Management
+status: active
+owner: "{{ owner }}"
+cycle_duration_weeks: 6
+cool_down_weeks: 2
+tags: [cycle, shape-up]
+```
+
+* **Shaping**: Designing the work at the right level of abstraction (neither too high nor too detailed).
+* **Betting**: Choosing which pitches to fund for the upcoming cycle.
+* **Building**: Fixed 6-week cycles of uninterrupted development, followed by a 2-week cool-down.
+
+## Definition of Done
+
+```yaml
+section: constitution.definition-of-done
+title: Definition of Done
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - pitch_approved_at_betting_table
+  - scope_mapped
+  - functional_demo_approved
+  - decision_history_updated
+  - test_suite_passing
+tags: [dod, quality, validation]
+```
+
+To mark a product cycle project as `done`, the following must be met:
+
+1. Pitch accepted at the betting table.
+2. Core scopes mapped and completed.
+3. Functional demo approved by the Product Owner.
+4. Key decisions documented in `product/decisions.md`.
+5. Existing test suite passes with zero failures.

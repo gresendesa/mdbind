@@ -1441,7 +1441,7 @@ def init(
     template: str = typer.Option(..., "--template", "-t", help="Path or URL to the template package zip file."),
     root: Optional[Path] = typer.Option(None, "--root", "-r", help="Target root directory to initialize."),
     force: bool = typer.Option(False, "--force", help="Force overwriting existing memory files or config."),
-    memory_root: str = typer.Option("scrum", "--memory-root", help="Directory name for project memory files."),
+    memory_root: Optional[str] = typer.Option(None, "--memory-root", help="Directory name for project memory files."),
     profile: str = typer.Option("standard", "--profile", help="Template profile to initialize."),
     context_file: Optional[Path] = typer.Option(None, "--context", help="JSON or YAML file containing context variables."),
     var: Optional[list[str]] = typer.Option(None, "--var", help="Pass a context variable in key=value format."),
@@ -1507,8 +1507,13 @@ def init(
             key, val = v.split("=", 1)
             context[key.strip()] = val.strip()
 
+    # Resolve memory root dynamically from command line option or package manifest
+    actual_memory_root = memory_root
+    if not actual_memory_root:
+        actual_memory_root = pkg.memory_root or "scrum"
+
     # 3. Add memory_root and template_profile to context as well before prompting
-    context.setdefault("memory_root", memory_root)
+    context.setdefault("memory_root", actual_memory_root)
     context.setdefault("template_profile", profile)
 
     # 4. Prompt user for missing required variables if stdin is a TTY
@@ -1557,7 +1562,7 @@ def init(
             target_root,
             context,
             force=force,
-            memory_root=memory_root,
+            memory_root=actual_memory_root,
             template_profile=profile,
             hook_placement=resolved_placement,
             secret_phrase=hook_secret,

@@ -50,6 +50,7 @@ class TemplatePackage:
     files: list[TemplatePackageFile]
     instructions: list[str]
     variables: list[TemplatePackageVariable]
+    memory_root: str | None = None
 
 
 @dataclass(frozen=True)
@@ -261,7 +262,7 @@ def init_from_template_package(
     context: dict[str, Any],
     *,
     force: bool = False,
-    memory_root: str = "scrum",
+    memory_root: Optional[str] = None,
     template_profile: str = "standard",
     hook_placement: str = "bottom",
     secret_phrase: Optional[str] = None,
@@ -269,26 +270,33 @@ def init_from_template_package(
     """Initialize project memory from a checksum-signed local template package."""
     package_path = package_path.resolve()
     target_root = target_root.resolve()
-    _prevent_existing_memory(target_root, memory_root, force=force)
 
     if not secret_phrase:
         secret_phrase = generate_secret_phrase()
-
-    hooked_files = []
-    if hook_placement != "none":
-        hooked_files = inject_session_hooks(
-            target_root,
-            placement=hook_placement,
-            secret_phrase=secret_phrase,
-            memory_root=memory_root,
-        )
 
     with TemporaryDirectory() as tmp:
         extracted = Path(tmp)
         package = _extract_package(package_path, extracted)
         _verify_checksum_signature(extracted)
+
+        # Resolve memory root dynamically
+        actual_memory_root = memory_root
+        if not actual_memory_root:
+            actual_memory_root = package.memory_root or "scrum"
+
+        _prevent_existing_memory(target_root, actual_memory_root, force=force)
+
+        hooked_files = []
+        if hook_placement != "none":
+            hooked_files = inject_session_hooks(
+                target_root,
+                placement=hook_placement,
+                secret_phrase=secret_phrase,
+                memory_root=actual_memory_root,
+            )
+
         full_context = dict(context)
-        full_context.setdefault("memory_root", memory_root)
+        full_context.setdefault("memory_root", actual_memory_root)
         full_context.setdefault("template_profile", template_profile)
         rendered = _render_package_files(extracted, package, full_context)
         _prevent_unapproved_overwrites(target_root, rendered, force=force)
@@ -301,7 +309,7 @@ def init_from_template_package(
 
         config_file = _write_init_config(
             target_root,
-            memory_root=memory_root,
+            memory_root=actual_memory_root,
             template_profile=template_profile,
             package=package,
             context=full_context,
@@ -314,7 +322,7 @@ def init_from_template_package(
             files=[file.path.as_posix() for file in rendered],
             instructions=package.instructions,
             config_file=config_file,
-            memory_root=memory_root,
+            memory_root=actual_memory_root,
             secret_phrase=secret_phrase,
             hooked_files=hooked_files,
         )
@@ -561,7 +569,18 @@ def _read_manifest(root: Path) -> TemplatePackage:
 
     variables = _read_manifest_variables(data)
 
-    return TemplatePackage(name=name, version=version, files=files, instructions=instructions, variables=variables)
+    memory_root = data.get("memory_root")
+    if memory_root is not None:
+        memory_root = str(memory_root)
+
+    return TemplatePackage(
+        name=name,
+        version=version,
+        files=files,
+        instructions=instructions,
+        variables=variables,
+        memory_root=memory_root,
+    )
 
 
 def _read_manifest_variables(data: dict[str, Any]) -> list[TemplatePackageVariable]:

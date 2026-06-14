@@ -1,0 +1,83 @@
+# Constitution - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constitution
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, engineering, adr, rfc, mdbind]
+```
+
+This document defines the operating constitution for the Engineering/ADR-centric workspace.
+
+## Purpose
+
+```yaml
+section: constitution.purpose
+title: Purpose
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+To drive architectural and design decisions through collaborative RFCs (Request for Comments) and record them as immutable ADRs (Architecture Decision Records).
+
+## Non-Negotiable Rules
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Non-Negotiable Rules
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Significant architectural changes must go through an RFC process.
+* Once approved, decisions must be documented as numbered ADRs.
+* The roadmap and ADR index must remain accurate and up-to-date.
+* Changes to this constitution can only be approved by the owner/lead architect.
+
+## Architectural Decision Workflow
+
+```yaml
+section: constitution.adr-workflow
+title: Architectural Decision Workflow
+status: active
+owner: "{{ owner }}"
+workflow_states:
+  - proposed
+  - accepted
+  - superseded
+  - rejected
+tags: [adr, workflow]
+```
+
+1. **RFC Proposed**: Write a proposal under `rfcs/`.
+2. **Review & Discussion**: Seek feedback and consensus.
+3. **ADR Recorded**: Create an ADR under `adr/` detailing Context, Decision, and Consequences. Mark status as `accepted`, `superseded`, or `rejected`.
+4. **Roadmap Aligned**: Ensure milestone impacts are updated in `ROADMAP.md`.
+
+## Definition of Done
+
+```yaml
+section: constitution.definition-of-done
+title: Definition of Done
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - rfc_reviewed_and_resolved
+  - adr_written_and_numbered
+  - index_updated
+  - test_verification_successful
+tags: [dod, quality, validation]
+```
+
+To complete an architectural change, the following must be met:
+
+1. RFC successfully reviewed and resolved.
+2. Formally numbered ADR added under `adr/`.
+3. ADR index in `ADR.md` updated.
+4. Validation tests executed and passing.

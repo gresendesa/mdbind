@@ -4,6 +4,7 @@ description: Kanban template package for continuous flow-based AI-operated memor
 author: MdBind maintainers
 template_engine: jinja2
 smd_version: "0.1.0"
+memory_root: kanban
 instructions:
   - kanban/instructions/LLM.md
 variables:
@@ -16,6 +17,8 @@ variables:
     default: Developer
     required: true
 files:
+  - template: kanban/CONSTITUTION.md.j2
+    target: kanban/CONSTITUTION.md
   - template: kanban/BOARD.md.j2
     target: kanban/BOARD.md
   - template: kanban/decisions.md.j2
@@ -29,6 +32,7 @@ compatibility:
   signature_policy: checksum-only
 entrypoints:
   base_memory:
+    - kanban/CONSTITUTION.md
     - kanban/BOARD.md
     - kanban/decisions.md
     - kanban/lessons.md

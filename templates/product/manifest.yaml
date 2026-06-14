@@ -4,6 +4,7 @@ description: Product-driven template package for Shape Up style development memo
 author: MdBind maintainers
 template_engine: jinja2
 smd_version: "0.1.0"
+memory_root: product
 instructions:
   - product/instructions/LLM.md
 variables:
@@ -16,6 +17,8 @@ variables:
     default: Product Owner
     required: true
 files:
+  - template: product/CONSTITUTION.md.j2
+    target: product/CONSTITUTION.md
   - template: product/PITCHES.md.j2
     target: product/PITCHES.md
   - template: product/decisions.md.j2
@@ -31,6 +34,7 @@ compatibility:
   signature_policy: checksum-only
 entrypoints:
   base_memory:
+    - product/CONSTITUTION.md
     - product/PITCHES.md
     - product/decisions.md
 tags: [product, shape-up, memory, ai, mdbind]

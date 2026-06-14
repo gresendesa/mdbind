@@ -4,6 +4,7 @@ description: Minimal template package for lightweight development memory.
 author: MdBind maintainers
 template_engine: jinja2
 smd_version: "0.1.0"
+memory_root: minimal
 instructions:
   - minimal/instructions/LLM.md
 variables:
@@ -16,6 +17,8 @@ variables:
     default: Owner
     required: true
 files:
+  - template: minimal/CONSTITUTION.md.j2
+    target: minimal/CONSTITUTION.md
   - template: minimal/README.md.j2
     target: minimal/README.md
   - template: minimal/todo.md.j2
@@ -29,6 +32,7 @@ compatibility:
   signature_policy: checksum-only
 entrypoints:
   base_memory:
+    - minimal/CONSTITUTION.md
     - minimal/README.md
     - minimal/todo.md
 tags: [minimal, memory, ai, mdbind]

@@ -4,6 +4,7 @@ description: Default Scrum.md template package for AI-operated Scrum memory.
 author: Scrum.md maintainers
 template_engine: jinja2
 smd_version: "0.1.0"
+memory_root: scrum
 instructions:
   - scrum/instructions/LLM.md
 variables:

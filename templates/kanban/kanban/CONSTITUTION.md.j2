@@ -1,0 +1,84 @@
+# Constitution - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constitution
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, kanban, mdbind]
+```
+
+This document defines the operating constitution for the Kanban-based workspace.
+
+## Purpose
+
+```yaml
+section: constitution.purpose
+title: Purpose
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+To establish a continuous, flow-based, visual development process using a Kanban board as the single source of truth for work items.
+
+## Non-Negotiable Rules
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Non-Negotiable Rules
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Work items must have clear ownership and progress transparently through states.
+* Work-In-Progress (WIP) limits must be respected and unblocked before starting new tasks.
+* Operational memory files under `kanban/` must be updated continuously.
+* Changes to this constitution can only be approved by the owner.
+
+## Kanban Flow and WIP Limits
+
+```yaml
+section: constitution.flow
+title: Kanban Flow and WIP Limits
+status: active
+owner: "{{ owner }}"
+wip_limits:
+  doing: 3
+  blocked: 2
+tags: [flow, kanban]
+```
+
+* **Backlog**: Holds pending requests, prioritised by the PO.
+* **Todo**: Selected for immediate action.
+* **Doing**: Currently in progress. **WIP Limit: 3**.
+* **Blocked**: Stalled due to external dependencies. **WIP Limit: 2**.
+* **Done**: Fully validated and complete.
+
+## Definition of Done
+
+```yaml
+section: constitution.definition-of-done
+title: Definition of Done
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - manual_test_documented
+  - board_updated
+  - decisions_logged
+  - regression_checklist_executed
+  - automated_tests_successful
+tags: [dod, quality, validation]
+```
+
+To mark any item as `done`, the following must be met:
+
+1. Manual validation or testing documented.
+2. The `BOARD.md` updated with correct status.
+3. Relevant architectural or process decisions recorded in `decisions.md`.
+4. Regression checklist executed and verified.
+5. All automated unit/integration tests passing.

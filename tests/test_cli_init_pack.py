@@ -234,11 +234,11 @@ def test_init_fails_path_traversal(temp_workspace: Path, tmp_path: Path):
 
 def test_init_real_templates(tmp_path: Path):
     templates_dir = Path(__file__).parent.parent / "templates"
-    for name, expected_file in [
-        ("kanban", "kanban/BOARD.md"),
-        ("product", "product/PITCHES.md"),
-        ("engineering", "engineering/ADR.md"),
-        ("minimal", "minimal/README.md"),
+    for name, expected_file, const_file in [
+        ("kanban", "kanban/BOARD.md", "kanban/CONSTITUTION.md"),
+        ("product", "product/PITCHES.md", "product/CONSTITUTION.md"),
+        ("engineering", "engineering/ADR.md", "engineering/CONSTITUTION.md"),
+        ("minimal", "minimal/README.md", "minimal/CONSTITUTION.md"),
     ]:
         template_src = templates_dir / name
         assert template_src.exists(), f"Template {name} does not exist at {template_src}"
@@ -255,19 +255,31 @@ def test_init_real_templates(tmp_path: Path):
             "owner": "Test Owner",
         }
         
+        # Test dynamic resolution of memory_root from manifest.yaml (memory_root is not passed)
         result = init_from_template_package(
             output_zip,
             target_root,
             context,
-            memory_root=name,
             template_profile="standard",
             hook_placement="none"
         )
         
         assert result.package["name"] == f"smd-{name}"
+        assert result.memory_root == name
+        
         expected_path = target_root / expected_file
         assert expected_path.exists()
         
+        const_path = target_root / const_file
+        assert const_path.exists()
+        
         content = expected_path.read_text(encoding="utf-8")
         assert f"Test {name}" in content
+
+        # Verify config.yaml
+        config_path = target_root / ".mdb" / "config.yaml"
+        assert config_path.exists()
+        import yaml
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+        assert config["memory_root"] == name
 

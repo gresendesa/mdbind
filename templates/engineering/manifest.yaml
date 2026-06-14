@@ -4,6 +4,7 @@ description: ADR and RFC-centric template package for technical engineering deve
 author: MdBind maintainers
 template_engine: jinja2
 smd_version: "0.1.0"
+memory_root: engineering
 instructions:
   - engineering/instructions/LLM.md
 variables:
@@ -16,6 +17,8 @@ variables:
     default: Lead Architect
     required: true
 files:
+  - template: engineering/CONSTITUTION.md.j2
+    target: engineering/CONSTITUTION.md
   - template: engineering/ADR.md.j2
     target: engineering/ADR.md
   - template: engineering/ROADMAP.md.j2
@@ -31,6 +34,7 @@ compatibility:
   signature_policy: checksum-only
 entrypoints:
   base_memory:
+    - engineering/CONSTITUTION.md
     - engineering/ADR.md
     - engineering/ROADMAP.md
 tags: [engineering, adr, rfc, memory, ai, mdbind]

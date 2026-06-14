@@ -1,0 +1,78 @@
+# Constitution - {{ project_name }}
+
+```yaml
+section: constitution
+title: Constitution
+project_name: {{ project_name }}
+status: active
+owner: "{{ owner }}"
+created_at: {{ created_at }}
+updated_at: {{ updated_at }}
+tags: [governance, constitution, memory, minimal, mdbind]
+```
+
+This document defines the operating constitution for the Minimal-styled workspace.
+
+## Purpose
+
+```yaml
+section: constitution.purpose
+title: Purpose
+status: active
+owner: "{{ owner }}"
+tags: [purpose, governance]
+```
+
+To provide a lightweight, zero-overhead structure with simple lists and a changelog to track objectives.
+
+## Non-Negotiable Rules
+
+```yaml
+section: constitution.non-negotiable-rules
+title: Non-Negotiable Rules
+status: active
+owner: "{{ owner }}"
+tags: [rules, governance]
+```
+
+* Maintain a single `todo.md` for active tasks.
+* Record user-facing updates in `CHANGELOG.md`.
+* Changes to this constitution require owner approval.
+
+## Task Status Scale
+
+```yaml
+section: constitution.task-statuses
+title: Task Status Scale
+status: active
+owner: "{{ owner }}"
+statuses:
+  - open
+  - in-progress
+  - completed
+tags: [status, tasks]
+```
+
+* **Open**: Pending action.
+* **In Progress**: Work active.
+* **Completed**: Verified and logged.
+
+## Definition of Done
+
+```yaml
+section: constitution.definition-of-done
+title: Definition of Done
+status: active
+owner: "{{ owner }}"
+required_checks:
+  - task_completed_in_todo
+  - changelog_updated
+  - test_verification_successful
+tags: [dod, quality, validation]
+```
+
+To mark a task as completed:
+
+1. Mark status as completed in `todo.md`.
+2. Document user-facing changes in `CHANGELOG.md`.
+3. Verify that tests pass.
