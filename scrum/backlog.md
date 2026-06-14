@@ -66,13 +66,12 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-043 | Session hijacking and instruction hooks for LLM dev environments | SPR-2026-23 |
 | B-044 | Manage agent session hooks via CLI command       | SPR-2026-24 |
 | B-045 | Implement Kanban, Shape Up, ADR, and Minimal template packages | SPR-2026-25 |
+| B-046 | Aperfeiçoar o CONSTITUTION.md de cada template com includes e refs | SPR-2026-26 |
+| B-047 | Interactive template selection in mdb init when template is omitted | SPR-2026-26 |
 
 ### Pending
 
-| ID    | Title                                            | Status | PO Priority | Risk       | Detail |
-|-------|--------------------------------------------------|--------|-------------|------------|--------|
-
-
+*No pending items.*
 
 ### Obsolete
 

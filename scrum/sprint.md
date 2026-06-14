@@ -245,6 +245,16 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Result: 6/6 tasks done, 268 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-25.md
 
+### SPR-2026-26
+
+- Status: done
+- Focus: B-046 & B-047 - Template constitutions refinement and interactive init template selection
+- PO Priority of items: B-046 = 2 (high), B-047 = 2 (high)
+- Sprint risk: medium (weighted avg 1.5)
+- Result: 8/8 tasks done, 269 tests passing; PO accepted
+- Detailed file: scrum/sprint/SPR-2026-26.md
+
+
 
 
 

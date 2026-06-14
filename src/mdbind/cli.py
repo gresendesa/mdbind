@@ -1427,7 +1427,6 @@ def pack(
     Combines a source directory of markdown templates and schema files into a deterministic, signed .zip package.
     """
     from mdbind.template_packages import pack_template_package, TemplatePackagePackError
-
     try:
         result = pack_template_package(directory, output, force=force)
         typer.echo(f"Successfully packed {len(result.files)} files into '{result.output}'.")
@@ -1436,9 +1435,51 @@ def pack(
         raise typer.Exit(code=1)
 
 
+def locate_templates_dir() -> Path:
+    # 1. Check relative to this file in development (repo root / templates)
+    dev_path = Path(__file__).resolve().parent.parent.parent / "templates"
+    if dev_path.exists() and dev_path.is_dir():
+        return dev_path
+    # 2. Check as package resource / installed data
+    installed_path = Path(__file__).resolve().parent / "templates"
+    if installed_path.exists() and installed_path.is_dir():
+        return installed_path
+    # 3. Fallback to site-packages level
+    fallback_path = Path(__file__).resolve().parent.parent / "templates"
+    if fallback_path.exists() and fallback_path.is_dir():
+        return fallback_path
+    raise FileNotFoundError("Could not find mdbind templates directory.")
+
+
+def discover_local_templates() -> list[tuple[str, Path, str]]:
+    """Discovers subdirectories containing manifest.yaml inside the templates directory.
+    Returns a list of tuples: (template_name, path, description).
+    """
+    try:
+        templates_dir = locate_templates_dir()
+    except FileNotFoundError:
+        return []
+
+    discovered = []
+    import yaml
+    for item in sorted(templates_dir.iterdir()):
+        if item.is_dir():
+            manifest_path = item / "manifest.yaml"
+            if manifest_path.exists():
+                try:
+                    with open(manifest_path, "r", encoding="utf-8") as f:
+                        data = yaml.safe_load(f) or {}
+                    desc = data.get("description", "No description provided.")
+                    name = data.get("name", item.name)
+                    discovered.append((name, item, desc))
+                except Exception:
+                    discovered.append((item.name, item, "No description provided."))
+    return discovered
+
+
 @app.command()
 def init(
-    template: str = typer.Option(..., "--template", "-t", help="Path or URL to the template package zip file."),
+    template: Optional[str] = typer.Option(None, "--template", "-t", help="Path or URL to the template package zip file."),
     root: Optional[Path] = typer.Option(None, "--root", "-r", help="Target root directory to initialize."),
     force: bool = typer.Option(False, "--force", help="Force overwriting existing memory files or config."),
     memory_root: Optional[str] = typer.Option(None, "--memory-root", help="Directory name for project memory files."),
@@ -1455,6 +1496,7 @@ def init(
     """
     from typing import Any
     import yaml
+    import sys
     from mdbind.template_packages import (
         init_from_template_package,
         inspect_template_package,
@@ -1463,119 +1505,145 @@ def init(
     )
 
     target_root = root.resolve() if root else Path.cwd()
+    temp_zip = None
 
     try:
-        resolved_template = resolve_template_package_path(
-            template,
-            checksum=checksum,
-            no_cache=no_cache,
-            repo_root=target_root,
-        )
-    except TemplatePackageError as exc:
-        typer.echo(f"Error resolving template package: {exc}", err=True)
-        raise typer.Exit(code=1)
-
-    try:
-        pkg = inspect_template_package(resolved_template, verify_signature=True)
-    except TemplatePackageError as exc:
-        typer.echo(f"Error inspecting template: {exc}", err=True)
-        raise typer.Exit(code=1)
-
-    # 1. Parse variables from context_file if provided
-    context: dict[str, Any] = {}
-    if context_file:
-        if not context_file.exists():
-            typer.echo(f"Error: context file '{context_file}' does not exist.", err=True)
-            raise typer.Exit(code=1)
-        try:
-            content = context_file.read_text(encoding="utf-8")
-            if context_file.suffix in (".yaml", ".yml"):
-                context = yaml.safe_load(content) or {}
-            else:
-                import json
-                context = json.loads(content) or {}
-        except Exception as exc:
-            typer.echo(f"Error reading context file: {exc}", err=True)
-            raise typer.Exit(code=1)
-
-    # 2. Parse variables from --var key=value
-    if var:
-        for v in var:
-            if "=" not in v:
-                typer.echo(f"Error: --var must be in key=value format. Received: '{v}'", err=True)
+        if not template:
+            if not sys.stdin.isatty():
+                typer.echo("Error: --template option is required when running in non-interactive mode.", err=True)
                 raise typer.Exit(code=1)
-            key, val = v.split("=", 1)
-            context[key.strip()] = val.strip()
 
-    # Resolve memory root dynamically from command line option or package manifest
-    actual_memory_root = memory_root
-    if not actual_memory_root:
-        actual_memory_root = pkg.memory_root or "scrum"
+            discovered_templates = discover_local_templates()
+            if not discovered_templates:
+                typer.echo("Error: No local templates found. Please specify a template package with --template.", err=True)
+                raise typer.Exit(code=1)
 
-    # 3. Add memory_root and template_profile to context as well before prompting
-    context.setdefault("memory_root", actual_memory_root)
-    context.setdefault("template_profile", profile)
+            typer.echo("\nAvailable Workspace Templates:\n")
+            for idx, (name, path, desc) in enumerate(discovered_templates, start=1):
+                typer.echo(f"  [{idx}] {path.name} (Package name: {name})")
+                typer.echo(f"      Description: {desc}\n")
 
-    # 4. Prompt user for missing required variables if stdin is a TTY
-    import sys
-    for variable in pkg.variables:
-        if variable.name not in context:
-            if sys.stdin.isatty():
-                prompt_str = f"{variable.prompt}"
-                if variable.default is not None:
-                    prompt_str += f" [{variable.default}]"
-                prompt_str += ": "
-                user_val = input(prompt_str).strip()
-                if not user_val and variable.default is not None:
-                    context[variable.name] = variable.default
-                elif not user_val and variable.required:
-                    typer.echo(f"Error: Variable '{variable.name}' is required.", err=True)
-                    raise typer.Exit(code=1)
-                else:
-                    context[variable.name] = user_val
-            else:
-                if variable.default is not None:
-                    context[variable.name] = variable.default
-                elif variable.required:
-                    typer.echo(f"Error: Variable '{variable.name}' is required but was not provided.", err=True)
-                    raise typer.Exit(code=1)
-
-    # Determine hook placement
-    resolved_placement = hook_placement
-    if resolved_placement is None:
-        if sys.stdin.isatty():
             while True:
-                choice = input("Onde deseja inserir o gancho de regras nos arquivos do agente? (top/bottom/none) [bottom]: ").strip().lower()
+                choice = input(f"Select a template by number (1-{len(discovered_templates)}): ").strip()
                 if not choice:
-                    resolved_placement = "bottom"
-                    break
-                if choice in ("top", "bottom", "none"):
-                    resolved_placement = choice
-                    break
-                typer.echo("Opcao invalida. Digite 'top', 'bottom' ou 'none'.", err=True)
-        else:
-            resolved_placement = "bottom"
+                    continue
+                try:
+                    choice_idx = int(choice) - 1
+                    if 0 <= choice_idx < len(discovered_templates):
+                        selected_name, selected_path, _ = discovered_templates[choice_idx]
+                        break
+                except ValueError:
+                    pass
+                typer.echo(f"Invalid selection. Please enter a number between 1 and {len(discovered_templates)}.", err=True)
 
-    try:
-        result = init_from_template_package(
-            resolved_template,
-            target_root,
-            context,
-            force=force,
-            memory_root=actual_memory_root,
-            template_profile=profile,
-            hook_placement=resolved_placement,
-            secret_phrase=hook_secret,
-        )
-        typer.echo(f"Successfully initialized workspace template '{result.package['name']}' ({result.package['version']}).")
-        if result.hooked_files:
-            typer.echo(f"Hooked agent instruction files: {', '.join(result.hooked_files)}")
-            typer.echo(f"Generated secret phrase: '{result.secret_phrase}'")
-            typer.echo("IMPORTANT: Restart your agent/LLM session to load the new instructions.")
-        typer.echo(f"Configuration file written to '{result.config_file}'.")
-    except TemplatePackageError as exc:
-        typer.echo(f"Error initializing template package: {exc}", err=True)
-        raise typer.Exit(code=1)
+            typer.echo(f"Packing template '{selected_path.name}' under the hood...")
+            from tempfile import NamedTemporaryFile
+            from mdbind.template_packages import pack_template_package
+
+            temp_zip = Path(NamedTemporaryFile(suffix=".zip", delete=False).name)
+            try:
+                pack_template_package(selected_path, temp_zip, force=True)
+                resolved_template = temp_zip
+            except Exception as exc:
+                typer.echo(f"Error packing template package: {exc}", err=True)
+                raise typer.Exit(code=1)
+        else:
+            try:
+                resolved_template = resolve_template_package_path(
+                    template,
+                    checksum=checksum,
+                    no_cache=no_cache,
+                    repo_root=target_root,
+                )
+            except TemplatePackageError as exc:
+                typer.echo(f"Error resolving template package: {exc}", err=True)
+                raise typer.Exit(code=1)
+
+        try:
+            pkg = inspect_template_package(resolved_template, verify_signature=True)
+        except TemplatePackageError as exc:
+            typer.echo(f"Error inspecting template: {exc}", err=True)
+            raise typer.Exit(code=1)
+
+        # 1. Parse variables from context_file if provided
+        context: dict[str, Any] = {}
+        if context_file:
+            if not context_file.exists():
+                typer.echo(f"Error: context file '{context_file}' does not exist.", err=True)
+                raise typer.Exit(code=1)
+            try:
+                content = context_file.read_text(encoding="utf-8")
+                if context_file.suffix in (".yaml", ".yml"):
+                    context = yaml.safe_load(content) or {}
+                else:
+                    import json
+                    context = json.loads(content) or {}
+            except Exception as exc:
+                typer.echo(f"Error reading context file: {exc}", err=True)
+                raise typer.Exit(code=1)
+
+        # 2. Parse variables from command line
+        if var:
+            for v in var:
+                if "=" not in v:
+                    typer.echo(f"Error: context variable must be in key=value format (found '{v}').", err=True)
+                    raise typer.Exit(code=1)
+                k, val = v.split("=", 1)
+                context[k.strip()] = val.strip()
+
+        # 3. Memory root resolution
+        actual_memory_root = memory_root
+        if not actual_memory_root:
+            actual_memory_root = pkg.memory_root
+        if not actual_memory_root:
+            actual_memory_root = "scrum"
+
+        # 4. Resolve interactive rules placement if needed
+        resolved_placement = hook_placement
+        if resolved_placement is None:
+            if sys.stdin.isatty():
+                while True:
+                    placement_choice = input(
+                        "Should mdbind inject a session hook into your agent's instructions?\n"
+                        "Choose placement: [top / bottom / none] (default: bottom): "
+                    ).strip().lower()
+                    if not placement_choice:
+                        resolved_placement = "bottom"
+                        break
+                    if placement_choice in ("top", "bottom", "none"):
+                        resolved_placement = placement_choice
+                        break
+                    typer.echo("Opcao invalida. Digite 'top', 'bottom' ou 'none'.", err=True)
+            else:
+                resolved_placement = "bottom"
+
+        try:
+            result = init_from_template_package(
+                resolved_template,
+                target_root,
+                context,
+                force=force,
+                memory_root=actual_memory_root,
+                template_profile=profile,
+                hook_placement=resolved_placement,
+                secret_phrase=hook_secret,
+            )
+            typer.echo(f"Successfully initialized workspace template '{result.package['name']}' ({result.package['version']}).")
+            if result.hooked_files:
+                typer.echo(f"Hooked agent instruction files: {', '.join(result.hooked_files)}")
+                typer.echo(f"Generated secret phrase: '{result.secret_phrase}'")
+                typer.echo("IMPORTANT: Restart your agent/LLM session to load the new instructions.")
+            typer.echo(f"Configuration file written to '{result.config_file}'.")
+        except TemplatePackageError as exc:
+            typer.echo(f"Error initializing template package: {exc}", err=True)
+            raise typer.Exit(code=1)
+
+    finally:
+        if temp_zip and temp_zip.exists():
+            try:
+                temp_zip.unlink()
+            except Exception:
+                pass
 
 
 @app.command("next-id")

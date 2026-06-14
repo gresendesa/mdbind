@@ -283,3 +283,51 @@ def test_init_real_templates(tmp_path: Path):
         config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
         assert config["memory_root"] == name
 
+
+def test_cli_init_interactive_selection(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    from mdbind.cli import app
+    from typer.testing import _NamedTextIOWrapper
+    
+    # Mock stdin.isatty to return True
+    monkeypatch.setattr("sys.stdin.isatty", lambda: True)
+    monkeypatch.setattr(_NamedTextIOWrapper, "isatty", lambda self: True)
+    
+    target_root = tmp_path / "target_interactive"
+    target_root.mkdir()
+    
+    # Run init without -t/--template option
+    # Available templates:
+    # 1. default
+    # 2. engineering
+    # 3. kanban
+    # 4. minimal
+    # 5. product
+    # Selecting "3" will be kanban.
+    result = runner.invoke(
+        app,
+        [
+            "init",
+            "-r", str(target_root),
+            "--var", "project_name=Test Interactive",
+            "--var", "owner=Interactive Owner",
+        ],
+        input="3\nnone\n"
+    )
+    
+    assert result.exit_code == 0
+    assert "Available Workspace Templates:" in result.output
+    assert "Packing template 'kanban' under the hood..." in result.output
+    assert "Successfully initialized workspace template 'smd-kanban'" in result.output
+    
+    # Verify the files were created correctly
+    board_path = target_root / "kanban" / "BOARD.md"
+    assert board_path.exists()
+    
+    const_path = target_root / "kanban" / "CONSTITUTION.md"
+    assert const_path.exists()
+    const_content = const_path.read_text(encoding="utf-8")
+    assert "Test Interactive" in const_content
+    # Confirm it contains the routing sections
+    assert "Kanban Board" in const_content
+    assert "BOARD.md#kanban-board" in const_content
+
