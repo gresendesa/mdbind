@@ -63,12 +63,14 @@ Full details for each item are in dedicated files under scrum/backlog/.
 | B-034 | Web URI schema references for section metadata | SPR-2026-21 |
 | B-041 | Web-based template packages (fetching template ZIPs from web URIs with checksum verification) | SPR-2026-21 |
 | B-042 | Global installation guidance using pipx in documentation | SPR-2026-22 |
+| B-043 | Session hijacking and instruction hooks for LLM dev environments | SPR-2026-23 |
 
 ### Pending
 
 | ID    | Title                                            | Status | PO Priority | Risk       | Detail |
 |-------|--------------------------------------------------|--------|-------------|------------|--------|
-| B-043 | Session hijacking and instruction hooks for LLM dev environments | todo   | 1 (critical)| 2 (medium) | scrum/backlog/B-043.md |
+| B-044 | Manage agent session hooks via CLI command       | todo   | 1           | 2          | scrum/backlog/B-044.md |
+
 
 
 

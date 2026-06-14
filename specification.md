@@ -258,6 +258,29 @@ Initializes a new directory using a signed template `.zip` package from a local 
 * **Interactive and Non-Interactive:** Supports interactive CLI prompt resolution, or non-interactive mode via `--context <file>` or `--var key=value` arguments.
 * **Flags:** `--checksum <hash>` (mandatory for remote templates, optional for local ones), `--no-cache` to force refetching remote templates.
 
+### 8.7. `mdb check-session-hook` (Agent Session Awareness Check)
+
+Validates the setup and active state of agent session rules hooks and retrieves the secret verification phrase.
+
+* **Mechanics:** Reads `.mdb/config.yaml` to retrieve the configured agent instruction files and the generated 5-word secret verification phrase.
+* **Canary Phrase Verification:** As part of the Context Anchoring mechanism, each workspace is initialized with a randomized 5-word passphrase (canary). Typing this phrase to the LLM triggers a forced project memory awareness confirmation, guaranteeing that the agent session is correctly anchored to the local workspace memory instead of relying purely on generic pre-trained (parametric) memory.
+* **Validation:** Programmatically checks that each hooked instruction file (e.g. `AGENTS.md`, `.github/copilot-instructions.md`) exists and contains the valid `@include: .../CONSTITUTION.md` directive.
+
+### 8.8. `mdb session-hook` (Agent Session Hook Management)
+
+Provides a CLI command group to dynamically manage agent session rules hooks in the workspace.
+
+* **`mdb session-hook inject`**: Injects or updates the session rules hook in the development environment entrypoints.
+  - Supports `--root` / `-r` (default `Path(".")`).
+  - Supports `--file` / `-f` to target a custom entrypoint path (e.g., `.cursorrules`).
+  - Supports `--placement` / `-p` (`top` or `bottom`) to set the insertion boundary.
+  - Supports `--secret` / `-s` to override the generated 5-word secret phrase.
+* **`mdb session-hook remove`**: Strips the session rules hook from development environment entrypoints.
+  - Supports `--root` / `-r` (default `Path(".")`).
+  - Supports `--file` / `-f` to target a custom entrypoint path for removal.
+  - If a file is left empty after hook removal, it is automatically deleted from the workspace to prevent clutter.
+  - Updates the active list of hooks recorded in `.mdb/config.yaml`.
+
 ---
 
 ## 9. Semantic Memory Model

@@ -20,14 +20,15 @@ status: active
 tags: [rules, llm]
 ```
 
-* Use `smd` commands for routine memory operations.
-* Do not use `mdb` directly in normal workflows; `smd` encapsulates graph operations.
-* Use `smd metadata` for reading or changing structured YAML metadata; do not edit metadata blocks by hand when a deterministic command can do it.
-* Validate memory before changing Scrum state.
-* Preserve `schema` metadata on structured sections and rely on `smd validate` for schema-aware validation failures.
+* Use `mdb` commands for routine memory operations.
+* Use `mdb metadata` for reading or changing structured YAML metadata; do not edit metadata blocks by hand when a deterministic command can do it.
+* Validate memory before changing Scrum state using `mdb validate`.
+* Preserve `schema` metadata on structured sections and rely on `mdb validate` for schema-aware validation failures.
 * Keep local schema files under `scrum/schema/` when changing default template memory surfaces.
 * Ask the Product Owner before changing priorities, closing sprints, or altering governance policy.
 * Keep backlog, sprint, decisions, experience, and architecture memory aligned.
+* The agent must locate and verify the workspace canary secret phrase to guarantee awareness of the project memory before proceeding.
+* Use `mdb check-session-hook` to verify agent session hook health, and `mdb session-hook` commands to manage hooks in environment files.
 
 ## Scrum Flow
 
@@ -53,4 +54,4 @@ status: active
 tags: [package, templates]
 ```
 
-This package uses Jinja2 templates and must be packed with `smd pack`, which generates checksum-only `SIGNATURE.yaml` metadata.
+This package uses Jinja2 templates and must be packed with `mdb pack`, which generates checksum-only `SIGNATURE.yaml` metadata.

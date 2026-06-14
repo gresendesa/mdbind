@@ -218,5 +218,23 @@ Full details for each sprint are in dedicated files under scrum/sprint/.
 - Result: 2/2 tasks done, 262 tests passing; PO accepted
 - Detailed file: scrum/sprint/SPR-2026-22.md
 
+### SPR-2026-23
+
+- Status: done
+- Focus: B-043 - Session hijacking and instruction hooks for LLM dev environments
+- PO Priority of items: B-043 = 1 (critical)
+- Sprint risk: medium
+- Result: 5/5 tasks done, 266 tests passing; PO accepted
+- Detailed file: scrum/sprint/SPR-2026-23.md
+
+### SPR-2026-24
+
+- Status: done
+- Focus: B-044 - Manage agent session hooks via CLI command
+- PO Priority of items: B-044 = 1 (critical)
+- Sprint risk: low
+- Result: 5/5 tasks done, 267 tests passing; PO accepted
+- Detailed file: scrum/sprint/SPR-2026-24.md
+
 
 

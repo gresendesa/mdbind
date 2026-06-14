@@ -232,10 +232,40 @@ mdb pack templates/scrum -o scrum_template.zip --force
 
 Initializes a new directory using a signed template `.zip` package (either local path or remote URL). Verifies member paths against traversal attacks and checks hashes against `SIGNATURE.yaml`. Downloads of remote templates require `--checksum <hash>`. Renders files using Jinja2 resolving variables via defaults, prompt inputs, context files, or `--var` overrides, and writes a `.mdb/config.yaml` tracking configuration. Remote downloads are cached in `.mdb/cache/templates/` under their URL hash. Use `--no-cache` to force remote template redownload.
 
+Supports injecting agent instruction rules hooks to dev entrypoints (`AGENTS.md`, `.github/copilot-instructions.md`) and generating a 5-word secret canary phrase. Customize hook placement with `--hook-placement [top|bottom|none]` and override the secret phrase with `--hook-secret <phrase>`.
+
 ```
 mdb init -t scrum_template.zip -r my_new_project/ --var project_name="My New App" --var owner="Bob"
 mdb init -t https://example.com/scrum.zip --checksum sha256:d8f2a...f7c22 -r my_new_project/ --var project_name="My New App"
 ```
+
+### mdb check-session-hook
+
+Verifies that the agent instruction files (e.g. `AGENTS.md` and `.github/copilot-instructions.md`) contain the required MdBind hooks and displays the secret 5-word verification phrase. Returns exit code 0 if all active hooks are valid; exit code 1 if any hook is missing or invalid.
+
+```
+mdb check-session-hook
+mdb check-session-hook --root my_new_project/
+```
+
+### mdb session-hook
+
+Command group to dynamically manage agent session rules hooks in the workspace.
+
+* `mdb session-hook inject`: Injects/updates the rules hook in the development environment entrypoints.
+  - `--root` / `-r` (Path, default `.`): Root directory.
+  - `--file` / `-f` (Path, optional): Target a custom entrypoint path (e.g. `.cursorrules`).
+  - `--placement` / `-p` (`top` or `bottom`, optional): Placement of the rules hook.
+  - `--secret` / `-s` (str, optional): Override generated 5-word secret phrase.
+* `mdb session-hook remove`: Strips the session rules hook from development environment entrypoints.
+  - `--root` / `-r` (Path, default `.`): Root directory.
+  - `--file` / `-f` (Path, optional): Target a custom entrypoint path for removal.
+
+```
+mdb session-hook inject --root my_new_project/ --file .cursorrules --placement top --secret "apple banana orange grape pear"
+mdb session-hook remove --root my_new_project/
+```
+
 
 ## Recommended patterns for AI agents
 

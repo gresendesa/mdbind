@@ -126,4 +126,13 @@ Record the history of decisions about memory architecture and process governance
 - Files affected: `src/mdbind/schema_validation.py`, `src/mdbind/template_packages.py`, `src/mdbind/cli.py`, `README.md`, `specification.md`, `llms.txt`, `tests/test_cli_web_schemas_templates.py`.
 - Future review: Add automated schema verification and certificate pinning support if required by enterprise environments.
 
+- ID: DEC-006
+- Date: 2026-06-14
+- Status: approved
+- Context: Protect developer workspaces from AI session hijacking and ensure LLMs parse the local project memory instead of relying on pre-trained parametric memory.
+- Decision: Add interactive session hook injection during `mdb init` (top/bottom/none placements) targeting files like `AGENTS.md` and `.github/copilot-instructions.md`. Generate a dynamic 5-word secret verification phrase to act as a canary. Implement the `mdb check-session-hook` CLI command to verify that entrypoint files are hooked with standard MdBind directives and report the secret phrase.
+- Impact: Standardized mechanism to enforce project-specific rules on incoming agent/LLM sessions.
+- Files affected: `src/mdbind/template_packages.py`, `src/mdbind/cli.py`, `tests/test_cli_session_hooks.py`, `README.md`, `specification.md`, `llms.txt`.
+- Future review: Review hooks integration when IDE-native memory injection APIs become standard.
+
 ---

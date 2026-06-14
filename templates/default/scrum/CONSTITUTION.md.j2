@@ -310,6 +310,7 @@ tags: [memory, agent, governance]
 The `scrum/` directory is the operational memory of the project and must follow these rules.
 
 [@include: Workspace Configuration](CONSTITUTION.md#constitution.agent-memory-management.config)
+[@include: Agent Session Hooks](CONSTITUTION.md#constitution.agent-memory-management.session-hooks)
 [@include: MDBind notation policy](CONSTITUTION.md#constitution.agent-memory-management.mdbind-notation-policy)
 [@ref: Backlog consolidator](backlog.md#backlog)
 [@ref: Sprint consolidator](sprints.md#sprints)
@@ -330,6 +331,25 @@ tags: [config, governance]
 The project workspace uses a `.mdb/config.yaml` file located in the root of the repository to store workspace-wide configuration settings (such as variables, initialized profile, and workflow constraints). 
 
 Placing this configuration in the repository root rather than inside the memory folder itself serves as a project-wide indicator that the workspace is managed by `mdbind`, maps project-wide variables, and enables `mdb` CLI commands to automatically resolve configuration settings (like `--root`). The dedicated `.mdb/` directory keeps the repository root clean while leaving space for future local caches.
+
+### Agent Session Hooks
+
+```yaml
+section: constitution.agent-memory-management.session-hooks
+title: Agent Session Hooks
+status: active
+owner: "{{ owner }}"
+required: true
+tags: [hooks, security, governance]
+```
+
+To ensure AI agents are aligned and verify their context against the repository's rules instead of relying purely on generic pre-trained parametric memory (Context Anchoring), development environment files (e.g. `AGENTS.md` or `.github/copilot-instructions.md`) are injected with rules hooks pointing to the project `CONSTITUTION.md`.
+
+* **Canary Phrase Verification**: The workspace configuration `.mdb/config.yaml` stores a randomized 5-word secret verification phrase (canary). Incoming AI agents must read the instructions containing this canary phrase and verify it against the constitution/config.
+* **CLI Management**:
+  - `mdb check-session-hook`: Checks that the hook markers are present, that they contain the `@include` to the constitution, and displays the canary phrase.
+  - `mdb session-hook inject`: Dynamic injection/updating of hooks in workspace files.
+  - `mdb session-hook remove`: Dynamic removal/cleanup of hooks from workspace files.
 
 ### MDBind Notation Policy
 

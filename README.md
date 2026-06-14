@@ -200,6 +200,8 @@ auth
 | `mdb context-compose <URI>` | Bounded materialization for LLM consumption |
 | `mdb pack <dir>` | Pack template scaffolding into deterministic signed zip package |
 | `mdb init` | Initialize project workspace/memory from signed zip package |
+| `mdb check-session-hook` | Verify agent session rules hook configuration and display secret canary phrase |
+| `mdb session-hook` | Command group to inject or remove agent session instruction rules hooks |
 
 All commands accept `--json` for machine-readable output.  
 All outputs are deterministic and JSON-serializable. All URIs are stable across sessions.
@@ -251,11 +253,50 @@ mdb init -t https://example.com/templates/scrum.zip -r my_new_project/ --checksu
 
 # Validate using web-based schemas and bypassing local cache
 mdb validate --root docs/ --no-cache
+
+# Verify agent instruction hooks and retrieve the secret verification phrase
+mdb check-session-hook --root my_new_project/
+
+# Inject a hook into a custom agent instructions file
+mdb session-hook inject --root my_new_project/ --file .cursorrules --placement top --secret "apple banana orange grape pear"
+
+# Remove all injected hooks from target files in the workspace
+mdb session-hook remove --root my_new_project/
 ```
 
 > [!NOTE]
 > **Workspace Configuration & Rationale:**
 > `mdb init` writes project configuration into `.mdb/config.yaml` at the root of the target directory. Keeping configuration at the repository root serves as a marker for `mdbind` tool operations, stores global variables, enables commands to locate the repository root automatically, and utilizes a dedicated `.mdb/` directory to prevent cluttering the root folder while accommodating future local caches (e.g. cached remote schemas and templates in `.mdb/cache/`).
+
+## Context Anchoring
+
+To prevent AI agents (like GitHub Copilot, Cursor, or custom IDE agents) from operating purely on generic pre-trained parametric memory, MdBind implements **Context Anchoring**. 
+
+Context Anchoring works by injecting instruction rules hooks directly into development environment entrypoints (such as `AGENTS.md` or `.github/copilot-instructions.md`). These hooks force the AI agent to load the repository's local non-parametric memory (namely the `CONSTITUTION.md` and Scrum files) before executing any tasks.
+
+### The Alignment Flow
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Developer
+    participant Agent as AI Agent (IDE/CLI)
+    participant Hook as Session Hook (e.g. AGENTS.md)
+    participant Memory as Project Memory (CONSTITUTION.md)
+
+    Developer->>Hook: Injects hook (mdb session-hook inject)
+    Note over Hook: Registers canary & constitution include
+    Agent->>Hook: Starts workspace session & reads instructions
+    Hook-->>Agent: Forces context alignment with @include CONSTITUTION.md & canary phrase
+    Agent->>Memory: Reads stable URIs, rules, and backlog
+    Agent->>Developer: Confirms/challenges using secret canary phrase
+```
+
+### Canary Phrase Verification
+During initialization or injection, a randomized 5-word secret phrase is stored in the workspace configuration `.mdb/config.yaml` (under the `context_anchoring` key).
+1. The injection command writes this canary phrase directly inside the hook boundaries of the instruction files.
+2. When the AI agent initializes its session, it reads the instruction file and must locate the canary phrase.
+3. The developer can run `mdb check-session-hook` at any time to verify hook health and display the expected canary phrase. If the agent fails to report or acknowledge this phrase, it indicates the agent is not reading the active workspace memory files.
 
 ---
 

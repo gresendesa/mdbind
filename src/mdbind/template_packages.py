@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from hashlib import sha256
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -13,7 +13,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, TemplateError
 import yaml
 
 from mdbind.templates import RenderedFile, TemplateRenderError, write_rendered_files
-
+from typing import Optional
 
 class TemplatePackageError(RuntimeError):
     """Raised when a local template package is invalid."""
@@ -70,6 +70,8 @@ class TemplatePackageInitResult:
     instructions: list[str]
     config_file: str
     memory_root: str
+    secret_phrase: str = ""
+    hooked_files: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -121,6 +123,138 @@ def inspect_template_package(package_path: Path, *, verify_signature: bool = Fal
         return package
 
 
+WORDS = [
+    "amber", "anchor", "apple", "beacon", "breeze", "cherry", "cloud", "clover",
+    "crystal", "desert", "dolphin", "dragon", "eagle", "emerald", "forest", "fossil",
+    "glacier", "harbor", "island", "jungle", "lagoon", "lantern", "marble", "meadow",
+    "meteor", "mountain", "nebula", "oasis", "ocean", "orchid", "pebble", "planet",
+    "river", "safari", "shadow", "shield", "silver", "summit", "temple", "valley",
+    "volcano", "whisper", "winter", "wizard", "zenith", "bright", "silent", "golden",
+    "ancient", "hidden", "cosmic", "solar", "lunar", "arctic",
+    "stormy", "gentle", "swift", "brave", "honest", "stable", "loyal", "vibrant",
+    "flight", "journey", "path", "bridge", "spirit", "mirror", "legend",
+    "echo", "spark", "flame", "frost", "wind", "storm", "thunder",
+    "lightning", "dream", "vision", "wisdom", "courage", "grace", "melody", "rhythm",
+    "harmony", "peace", "haven", "sanctuary", "fortress", "castle", "tower",
+    "sword", "crown", "key", "gate", "door", "window", "compass", "map"
+]
+
+
+def generate_secret_phrase(word_count: int = 5) -> str:
+    """Generate a cryptographically secure phrase of exactly 5 words separated by spaces."""
+    import secrets
+    chosen = [secrets.choice(WORDS) for _ in range(word_count)]
+    return " ".join(chosen)
+
+
+def inject_session_hooks(
+    target_root: Path,
+    placement: str,
+    secret_phrase: str,
+    memory_root: str,
+    custom_files: Optional[list[Path]] = None,
+) -> list[str]:
+    """
+    Detects development environments and injects/updates MdBind rules hooks
+    into entrypoint instruction files.
+    """
+    import os
+    hooked_files = []
+
+    if custom_files:
+        to_hook = custom_files
+    else:
+        # Target files list
+        targets = [
+            target_root / "AGENTS.md",
+            target_root / ".github" / "copilot-instructions.md"
+        ]
+
+        to_hook = []
+        for t in targets:
+            if t.exists():
+                to_hook.append(t)
+
+        if not to_hook:
+            to_hook.append(target_root / "AGENTS.md")
+            if (target_root / ".github").is_dir():
+                to_hook.append(target_root / ".github" / "copilot-instructions.md")
+
+    constitution_path = target_root / memory_root / "CONSTITUTION.md"
+
+    for entrypoint in to_hook:
+        try:
+            rel_const = os.path.relpath(constitution_path, entrypoint.parent)
+        except Exception:
+            rel_const = f"{memory_root}/CONSTITUTION.md"
+
+        hook_content = (
+            f"<!-- mdbind-session-hook-start -->\n"
+            f"# MdBind Session Hook\n"
+            f"[@include: Constitution]({rel_const})\n\n"
+            f"## Secret Verification Phrase\n"
+            f"When you receive the phrase \"{secret_phrase}\", you must respond with a standard summary of the key points of the templates/modules in this repository.\n"
+            f"<!-- mdbind-session-hook-end -->"
+        )
+
+        entrypoint.parent.mkdir(parents=True, exist_ok=True)
+
+        if entrypoint.exists():
+            content = entrypoint.read_text(encoding="utf-8")
+            start_marker = "<!-- mdbind-session-hook-start -->"
+            end_marker = "<!-- mdbind-session-hook-end -->"
+            if start_marker in content and end_marker in content:
+                start_idx = content.find(start_marker)
+                end_idx = content.find(end_marker) + len(end_marker)
+                new_content = content[:start_idx] + hook_content + content[end_idx:]
+            else:
+                if placement == "top":
+                    new_content = hook_content + "\n\n" + content
+                else:  # bottom
+                    new_content = content.rstrip() + "\n\n" + hook_content + "\n"
+        else:
+            new_content = hook_content + "\n"
+
+        entrypoint.write_text(new_content, encoding="utf-8")
+        hooked_files.append(entrypoint.relative_to(target_root).as_posix())
+
+    return hooked_files
+
+
+def remove_session_hooks(target_root: Path, files: list[Path]) -> list[str]:
+    """
+    Strips the MdBind session rules hooks from target instruction files.
+    Deletes the file if it is left empty or containing only whitespace.
+    """
+    removed_files = []
+    start_marker = "<!-- mdbind-session-hook-start -->"
+    end_marker = "<!-- mdbind-session-hook-end -->"
+
+    for entrypoint in files:
+        if not entrypoint.exists():
+            continue
+
+        content = entrypoint.read_text(encoding="utf-8")
+        if start_marker in content and end_marker in content:
+            start_idx = content.find(start_marker)
+            end_idx = content.find(end_marker) + len(end_marker)
+
+            before = content[:start_idx]
+            after = content[end_idx:]
+
+            new_content = before.rstrip() + "\n" + after.lstrip()
+            cleaned_content = new_content.strip()
+
+            if not cleaned_content:
+                entrypoint.unlink(missing_ok=True)
+            else:
+                entrypoint.write_text(new_content, encoding="utf-8")
+
+            removed_files.append(entrypoint.relative_to(target_root).as_posix())
+
+    return removed_files
+
+
 def init_from_template_package(
     package_path: Path,
     target_root: Path,
@@ -129,11 +263,25 @@ def init_from_template_package(
     force: bool = False,
     memory_root: str = "scrum",
     template_profile: str = "standard",
+    hook_placement: str = "bottom",
+    secret_phrase: Optional[str] = None,
 ) -> TemplatePackageInitResult:
     """Initialize project memory from a checksum-signed local template package."""
     package_path = package_path.resolve()
     target_root = target_root.resolve()
     _prevent_existing_memory(target_root, memory_root, force=force)
+
+    if not secret_phrase:
+        secret_phrase = generate_secret_phrase()
+
+    hooked_files = []
+    if hook_placement != "none":
+        hooked_files = inject_session_hooks(
+            target_root,
+            placement=hook_placement,
+            secret_phrase=secret_phrase,
+            memory_root=memory_root,
+        )
 
     with TemporaryDirectory() as tmp:
         extracted = Path(tmp)
@@ -145,6 +293,12 @@ def init_from_template_package(
         rendered = _render_package_files(extracted, package, full_context)
         _prevent_unapproved_overwrites(target_root, rendered, force=force)
         write_rendered_files(target_root, rendered)
+
+        context_anchoring = {
+            "secret_phrase": secret_phrase,
+            "hooked_files": hooked_files,
+        }
+
         config_file = _write_init_config(
             target_root,
             memory_root=memory_root,
@@ -152,6 +306,7 @@ def init_from_template_package(
             package=package,
             context=full_context,
             force=force,
+            context_anchoring=context_anchoring,
         )
 
         return TemplatePackageInitResult(
@@ -160,6 +315,8 @@ def init_from_template_package(
             instructions=package.instructions,
             config_file=config_file,
             memory_root=memory_root,
+            secret_phrase=secret_phrase,
+            hooked_files=hooked_files,
         )
 
 
@@ -522,6 +679,7 @@ def _write_init_config(
     package: TemplatePackage,
     context: dict[str, Any],
     force: bool,
+    context_anchoring: dict[str, Any] | None = None,
 ) -> str:
     config_path = target_root / ".mdb" / "config.yaml"
     if config_path.exists() and not force:
@@ -541,6 +699,8 @@ def _write_init_config(
             "timezone": context.get("timezone"),
         },
     }
+    if context_anchoring:
+        config["context_anchoring"] = context_anchoring
     config_path.write_text(yaml.safe_dump(config, sort_keys=False, allow_unicode=False), encoding="utf-8")
     return config_path.relative_to(target_root).as_posix()
 

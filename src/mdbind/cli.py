@@ -23,6 +23,8 @@ app = typer.Typer(
 )
 metadata_app = typer.Typer(help="Read and edit structured YAML metadata blocks.")
 app.add_typer(metadata_app, name="metadata")
+session_hook_app = typer.Typer(help="Manage agent session hooks.")
+app.add_typer(session_hook_app, name="session-hook")
 
 
 def version_callback(value: bool):
@@ -1445,6 +1447,8 @@ def init(
     var: Optional[list[str]] = typer.Option(None, "--var", help="Pass a context variable in key=value format."),
     checksum: Optional[str] = typer.Option(None, "--checksum", help="Expected SHA256 checksum of the template package zip file."),
     no_cache: bool = typer.Option(False, "--no-cache", help="Disable download caching for web-based templates."),
+    hook_placement: Optional[str] = typer.Option(None, "--hook-placement", help="Placement of the rules hook inside entrypoint files (top, bottom, or none)."),
+    hook_secret: Optional[str] = typer.Option(None, "--hook-secret", help="Override the generated 5-word secret phrase."),
 ) -> None:
     """
     Initializes a new directory using a signed template zip package.
@@ -1531,6 +1535,22 @@ def init(
                     typer.echo(f"Error: Variable '{variable.name}' is required but was not provided.", err=True)
                     raise typer.Exit(code=1)
 
+    # Determine hook placement
+    resolved_placement = hook_placement
+    if resolved_placement is None:
+        if sys.stdin.isatty():
+            while True:
+                choice = input("Onde deseja inserir o gancho de regras nos arquivos do agente? (top/bottom/none) [bottom]: ").strip().lower()
+                if not choice:
+                    resolved_placement = "bottom"
+                    break
+                if choice in ("top", "bottom", "none"):
+                    resolved_placement = choice
+                    break
+                typer.echo("Opcao invalida. Digite 'top', 'bottom' ou 'none'.", err=True)
+        else:
+            resolved_placement = "bottom"
+
     try:
         result = init_from_template_package(
             resolved_template,
@@ -1539,8 +1559,14 @@ def init(
             force=force,
             memory_root=memory_root,
             template_profile=profile,
+            hook_placement=resolved_placement,
+            secret_phrase=hook_secret,
         )
         typer.echo(f"Successfully initialized workspace template '{result.package['name']}' ({result.package['version']}).")
+        if result.hooked_files:
+            typer.echo(f"Hooked agent instruction files: {', '.join(result.hooked_files)}")
+            typer.echo(f"Generated secret phrase: '{result.secret_phrase}'")
+            typer.echo("IMPORTANT: Restart your agent/LLM session to load the new instructions.")
         typer.echo(f"Configuration file written to '{result.config_file}'.")
     except TemplatePackageError as exc:
         typer.echo(f"Error initializing template package: {exc}", err=True)
@@ -1573,3 +1599,244 @@ def next_id_cmd(
         typer.echo(f"Error computing next ID: {exc}", err=True)
         raise typer.Exit(code=1)
 
+@app.command("check-session-hook")
+def check_session_hook(
+    root: Path = typer.Option(Path("."), "--root", "-r", help="Root directory of the workspace"),
+) -> None:
+    """
+    Verifies that the agent instruction files contain the required MdBind hooks and displays the secret verification phrase.
+    """
+    import yaml
+
+    target_root = root.resolve()
+    config_path = target_root / ".mdb" / "config.yaml"
+    if not config_path.exists():
+        typer.echo("Error: Workspace not initialized. No .mdb/config.yaml found.", err=True)
+        raise typer.Exit(code=1)
+
+    try:
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    except Exception as exc:
+        typer.echo(f"Error reading configuration file: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    hijack_config = config.get("context_anchoring")
+    if hijack_config is None:
+        hijack_config = config.get("session_hijack")
+    if not hijack_config or not isinstance(hijack_config, dict):
+        typer.echo("Error: No context anchoring configuration found in .mdb/config.yaml.", err=True)
+        raise typer.Exit(code=1)
+
+    secret_phrase = hijack_config.get("secret_phrase")
+    hooked_files = hijack_config.get("hooked_files", [])
+
+    if not secret_phrase:
+        typer.echo("Error: No secret phrase configured in .mdb/config.yaml.", err=True)
+        raise typer.Exit(code=1)
+
+    if not hooked_files:
+        typer.echo("Warning: No hooked files recorded in .mdb/config.yaml.")
+
+    all_ok = True
+    for file_rel in hooked_files:
+        file_path = target_root / file_rel
+        if not file_path.exists():
+            typer.echo(f"FAIL: Hooked file '{file_rel}' does not exist.", err=True)
+            all_ok = False
+            continue
+
+        content = file_path.read_text(encoding="utf-8")
+        if "<!-- mdbind-session-hook-start -->" not in content or "<!-- mdbind-session-hook-end -->" not in content:
+            typer.echo(f"FAIL: Hooked file '{file_rel}' exists but is missing the mdbind session hook boundary markers.", err=True)
+            all_ok = False
+            continue
+
+        if "@include" not in content or "CONSTITUTION.md" not in content:
+            typer.echo(f"FAIL: Hooked file '{file_rel}' exists but is missing the @include pointing to CONSTITUTION.md.", err=True)
+            all_ok = False
+            continue
+
+        typer.echo(f"OK: Hook in '{file_rel}' is active and valid.")
+
+    typer.echo("\n--- Session Hook Details ---")
+    typer.echo(f"Secret Verification Phrase: '{secret_phrase}'")
+    typer.echo("To verify agent awareness, type the secret phrase into your active AI agent session.")
+    typer.echo("The agent is expected to respond with a summary of key template/constitution points.")
+
+    if not all_ok:
+        raise typer.Exit(code=1)
+
+
+@session_hook_app.command("inject")
+def session_hook_inject(
+    root: Path = typer.Option(Path("."), "--root", "-r", help="Root directory of the workspace"),
+    file: Optional[Path] = typer.Option(None, "--file", "-f", help="Custom path to the file to hook (e.g. .cursorrules)."),
+    placement: Optional[str] = typer.Option(None, "--placement", "-p", help="Placement of the rules hook inside entrypoint files (top or bottom)."),
+    secret: Optional[str] = typer.Option(None, "--secret", "-s", help="Override the generated 5-word secret phrase."),
+) -> None:
+    """
+    Injects or updates the MdBind session rules hook in development entrypoints.
+    """
+    import yaml
+    import sys
+    from mdbind.template_packages import (
+        inject_session_hooks,
+        generate_secret_phrase,
+    )
+
+    target_root = root.resolve()
+    config_path = target_root / ".mdb" / "config.yaml"
+    if not config_path.exists():
+        typer.echo("Error: Workspace not initialized. No .mdb/config.yaml found.", err=True)
+        raise typer.Exit(code=1)
+
+    try:
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    except Exception as exc:
+        typer.echo(f"Error reading configuration file: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    hijack_config = config.get("context_anchoring")
+    if hijack_config is None:
+        hijack_config = config.get("session_hijack")
+    if not isinstance(hijack_config, dict):
+        hijack_config = {}
+    config["context_anchoring"] = hijack_config
+    config.pop("session_hijack", None)
+
+    secret_phrase = secret or hijack_config.get("secret_phrase")
+    if not secret_phrase:
+        secret_phrase = generate_secret_phrase()
+    else:
+        if len(secret_phrase.strip().split()) != 5:
+            typer.echo("Error: The secret phrase must consist of exactly 5 words.", err=True)
+            raise typer.Exit(code=1)
+
+    resolved_placement = placement
+    if resolved_placement is None:
+        if sys.stdin.isatty():
+            while True:
+                choice = input("Where do you want to place the hook in the agent instructions? (top/bottom) [bottom]: ").strip().lower()
+                if not choice:
+                    resolved_placement = "bottom"
+                    break
+                if choice in ("top", "bottom"):
+                    resolved_placement = choice
+                    break
+                typer.echo("Invalid option. Please enter 'top' or 'bottom'.", err=True)
+        else:
+            resolved_placement = "bottom"
+
+    if resolved_placement not in ("top", "bottom"):
+        typer.echo("Error: Placement must be 'top' or 'bottom'.", err=True)
+        raise typer.Exit(code=1)
+
+    custom_files = [target_root / file] if file else None
+    memory_root = config.get("memory_root", "scrum")
+
+    try:
+        hooked_files = inject_session_hooks(
+            target_root=target_root,
+            placement=resolved_placement,
+            secret_phrase=secret_phrase,
+            memory_root=memory_root,
+            custom_files=custom_files,
+        )
+    except Exception as exc:
+        typer.echo(f"Error injecting session hooks: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    hijack_config["secret_phrase"] = secret_phrase
+    
+    current_hooked = list(hijack_config.get("hooked_files", []))
+    for hf in hooked_files:
+        if hf not in current_hooked:
+            current_hooked.append(hf)
+    hijack_config["hooked_files"] = current_hooked
+
+    try:
+        config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    except Exception as exc:
+        typer.echo(f"Error saving configuration: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    typer.echo("Success: Session hooks injected/updated successfully.")
+    for hf in hooked_files:
+        typer.echo(f"  - Injected: {hf}")
+    typer.echo(f"Secret phrase: '{secret_phrase}'")
+    typer.echo("Please restart your AI agent/IDE session to load the updated instructions.")
+
+
+@session_hook_app.command("remove")
+def session_hook_remove(
+    root: Path = typer.Option(Path("."), "--root", "-r", help="Root directory of the workspace"),
+    file: Optional[Path] = typer.Option(None, "--file", "-f", help="Custom path to the file to remove the hook from."),
+) -> None:
+    """
+    Removes the MdBind session rules hook from development entrypoints.
+    """
+    import yaml
+    from mdbind.template_packages import remove_session_hooks
+
+    target_root = root.resolve()
+    config_path = target_root / ".mdb" / "config.yaml"
+    if not config_path.exists():
+        typer.echo("Error: Workspace not initialized. No .mdb/config.yaml found.", err=True)
+        raise typer.Exit(code=1)
+
+    try:
+        config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    except Exception as exc:
+        typer.echo(f"Error reading configuration file: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    hijack_config = config.get("context_anchoring")
+    if hijack_config is None:
+        hijack_config = config.get("session_hijack")
+    if not isinstance(hijack_config, dict):
+        hijack_config = {}
+    config["context_anchoring"] = hijack_config
+    config.pop("session_hijack", None)
+
+    if file:
+        files_to_remove = [target_root / file]
+    else:
+        configured_files = hijack_config.get("hooked_files", [])
+        if not configured_files:
+            targets = [
+                target_root / "AGENTS.md",
+                target_root / ".github" / "copilot-instructions.md"
+            ]
+            files_to_remove = [t for t in targets if t.exists()]
+        else:
+            files_to_remove = [target_root / Path(f) for f in configured_files]
+
+    if not files_to_remove:
+        typer.echo("No potential hooked files found or configured to clean.")
+        return
+
+    try:
+        removed_files = remove_session_hooks(target_root, files_to_remove)
+    except Exception as exc:
+        typer.echo(f"Error removing session hooks: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    if "hooked_files" in hijack_config:
+        current_hooked = list(hijack_config["hooked_files"])
+        for rf in removed_files:
+            if rf in current_hooked:
+                current_hooked.remove(rf)
+        hijack_config["hooked_files"] = current_hooked
+
+    try:
+        config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
+    except Exception as exc:
+        typer.echo(f"Error saving configuration: {exc}", err=True)
+        raise typer.Exit(code=1)
+
+    if removed_files:
+        typer.echo("Success: Session hooks removed successfully.")
+        for rf in removed_files:
+            typer.echo(f"  - Cleaned: {rf}")
+    else:
+        typer.echo("No active MdBind session hooks were found to remove in the targeted files.")
